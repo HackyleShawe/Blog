@@ -1,0 +1,113 @@
+
+.hero {
+  background-image: url('https://res.hackyle.com/blog/pexels-photo-450035.jpeg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: bottom center;
+  height: 100vh;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  margin-bottom: 20px;
+  z-index: -2;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+.hero h1 {
+  font-size: 46px;
+  margin: -20px 0 20px;
+}
+.hero p {
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
+.content h2,
+.content h3 {
+  font-size: 150%;
+  margin: 20px 0;
+}
+
+.content p {
+  color: #555;
+  line-height: 30px;
+  letter-spacing: 1.2px;
+}
+
+.sec-container {
+  background-color: #efedd6;
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+.box {
+  background-color: steelblue;
+  color: #fff;
+  display: flex;
+  /*当有内容超出时，直接隐藏，不让其超出div*/
+  overflow: hidden;
+  align-items: center;
+  justify-content: left;
+  width: 850px;
+  height: 160px;
+  margin: 10px;
+  border-radius: 10px;
+  box-shadow: 2px 4px 5px rgba(0, 0, 0, 0.3);
+  transform: translateX(400%);
+  transition: transform 0.4s ease;
+}
+
+.box:nth-of-type(even) {
+  transform: translateX(-400%);
+}
+
+.box.show {
+  transform: translateX(0);
+}
+
+.box h2 {
+  font-size: 45px;
+}
+
+.box a:link { text-decoration: none; color: #fff}
+.box a:active { text-decoration:none; color: #fff}
+.box a:hover { text-decoration:none; color: #fff}
+.box a:visited { text-decoration: none; color: #fff}
+
+
+.article-abstract {
+  margin-left: 15px;
+}
+.article-abstract .summary {
+  /*当有内容超出时，直接隐藏，不让其超出div*/
+  overflow: hidden;
+  max-height: 40px;
+}
+.article-abstract .meta {
+  margin-top: 5px;
+  font-size: small;
+}
+
+/*上一页、下一页*/
+.page {
+  height: 49px;
+  margin: 10px auto;
+  text-align: center;
+  font-size: x-large;
+}

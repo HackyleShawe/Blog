@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hackyle.blog.customer.module.article.mapper.CommentMapper">
+
+    <resultMap id="BaseResultMap" type="com.hackyle.blog.customer.module.article.model.entity.CommentEntity">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="articleId" column="article_id" jdbcType="BIGINT"/>
+            <result property="commentatorId" column="commentator_id" jdbcType="BIGINT"/>
+            <result property="commentatorName" column="commentator_name" jdbcType="VARCHAR"/>
+            <result property="commentatorEmail" column="commentator_email" jdbcType="VARCHAR"/>
+            <result property="commentatorLink" column="commentator_link" jdbcType="VARCHAR"/>
+            <result property="commentatorIp" column="commentator_ip" jdbcType="VARCHAR"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="replyId" column="reply_id" jdbcType="BIGINT"/>
+            <result property="replyName" column="reply_name" jdbcType="VARCHAR"/>
+            <result property="rootId" column="root_id" jdbcType="BIGINT"/>
+            <result property="pid" column="pid" jdbcType="BIGINT"/>
+            <result property="released" column="released" jdbcType="BIT"/>
+            <result property="deleted" column="deleted" jdbcType="BIT"/>
+            <result property="createBy" column="create_by" jdbcType="BIGINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateBy" column="update_by" jdbcType="BIGINT"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+
+</mapper>

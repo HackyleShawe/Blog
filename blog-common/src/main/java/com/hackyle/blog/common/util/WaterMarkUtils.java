@@ -90,7 +90,7 @@ public class WaterMarkUtils {
      */
     public static void markByText(String text, InputStream sourceImgStream, OutputStream targetImgStream, String imgType) throws IOException {
         //入参检查
-        if(text == null || "".equals(text.trim()) || imgType == null || "".equals(imgType.trim())) {
+        if(text == null || text.trim().isEmpty() || imgType == null || imgType.trim().isEmpty()) {
             throw new IllegalArgumentException("The parameters of image water mark can't be null: text=" +text+ ", imgType=" +imgType);
         }
         if(sourceImgStream == null) {

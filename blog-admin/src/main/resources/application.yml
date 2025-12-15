@@ -1,0 +1,14 @@
+server:
+  port: 8100
+  servlet:
+    context-path: /
+
+
+# MySQL驱动以及连接参数
+spring:
+  profiles:
+    active: dev #注意打包时需要激活prod环境
+  mvc:
+    path-match:
+      matching-strategy: ant_path_matcher # 解决多个斜杠的路径匹配问题，使得/api/hello等于/api//hello
+

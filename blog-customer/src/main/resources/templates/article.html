@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="robots" content="all">
+
+  <meta name="author" content="Hackyle; Kyle Shawe">
+  <meta name="reply-to" content="kyleshawe@outlook.com;1617358182@qq.com">
+  <meta name="generator" content="Sublime Text 3; VSCode">
+  <meta name="copyright" content="Copy Right: 2022 HACKYLE. All rights reserved">
+
+  <meta name="keywords" th:content="${metaVo.keywords}">
+  <meta name="description" th:content="${metaVo.description}">
+
+  <!-- 给网站设置图标 -->
+  <link rel="icon" href="/img/favicon.ico">
+
+  <!--<title th:replace="${articleListVo.meteVo.title}">博客详情</title>-->
+  <title><th:block th:text="${metaVo.title}">博客详情</th:block></title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/article.css">
+
+  <!-- JS -->
+  <script src="/plugin/jquery-1.12.4.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.5.0/tocbot.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.5.0/tocbot.css">
+
+  <script src="/plugin/prism.js"></script>
+  <link rel="stylesheet" href="/plugin/prism.css">
+
+  <script src="https://cdn.tiny.cloud/1/r9kerxnm8ydga1tchdwlcs7tx8gsxqwjoxedsryjpsdche70/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+  <script>
+    // Code Reference：https://www.cnblogs.com/zhaohongcheng/p/12208492.html
+    // 监听整个网页的copy(复制)事件
+    document.addEventListener('copy', function (event) {
+      // clipboardData 对象是为通过编辑菜单、快捷菜单和快捷键执行的编辑操作所保留的，也就是你复制或者剪切内容
+      let clipboardData = event.clipboardData || window.clipboardData;
+      // 如果未复制或者未剪切，则return出去
+      if (!clipboardData) { return; }
+
+      // Selection 对象，表示用户选择的文本范围或光标的当前位置。
+      // 声明一个变量接收 -- 用户输入的剪切或者复制的文本转化为字符串
+      let text = window.getSelection().toString();
+      if (text && text.length > 80) {
+        // 如果文本存在，首先取消文本的默认事件
+        event.preventDefault();
+        // 通过调用常clipboardData对象的 setData(format, data) 方法；来设置相关文本
+
+        let articleURL = document.getElementById("articleURL").innerText
+
+        // setData(format, data);参数
+        // format：一个DOMString 表示要添加到 drag object的拖动数据的类型。
+        // data:一个 DOMString表示要添加到 drag object的数据。
+        clipboardData.setData('text/plain', text + ' \n\n' //在原文后换两行
+            +'————————————————' + '\n'
+            +'版权声明：非明确标注皆为原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上本文链接及此声明。' + '\n'
+            +'原文链接：' + articleURL)
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <div th:replace="components/nav"></div>
+
+  <div class="face article-meta-container" id="articleMetaDiv">
+    <h1 th:text="${articleVo.title}">title</h1>
+
+    <p>
+      <i th:if="${articleVo.categoryNames != null}">文章分类：<span th:text="${articleVo.categoryNames}"> </span>；</i>
+      <i th:if="${articleVo.authorNames != null}">作者：<span th:text="${articleVo.authorNames}">Hackyle</span>；</i> <br/>
+    </p>
+    <p>
+      <i th:if="${articleVo.updateTime != null}">更新时间：<span th:text="${articleVo.updateTime}"></span></i>
+    </p>
+
+    <!--不显示的页面属性-->
+    <div hidden>
+      <!--文章ID-->
+      <span th:text="${articleVo.id}" id="articleId">id</span>
+    </div>
+  </div>
+
+  <div class="face" id="articleMainDiv">
+    <!--左侧导航栏-->
+    <aside>
+    </aside>
+
+    <!--文章主体-->
+    <main>
+      <article th:utext="${articleVo.content}">
+        文章正文
+      </article>
+
+      <!--版权声明-->
+      <p>
+        <span>————————————————</span> <br/>
+        版权声明：非明确标注皆为原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上本文链接及此声明。<br/>
+        原文链接：<span id="articleURL" th:text="${articleVo.url}">https://blog.hackyle.com</span><br/><br/>
+      </p>
+    </main>
+
+  </div>
+
+  <!--评论区-->
+  <div class="face article-comment-container" id="articleCommentDiv">
+    <!--评论-->
+    <div class="add-comment-container" th:if="${articleVo.commented != null && articleVo.commented}">
+      <p style="text-align: center; font-size: x-large">留下你的评论</p>
+      <div class="comment-input">
+        <p>Name:&emsp;<input type="text" id="name" placeholder="Input your name, please" size="45" class="form-input"></p>
+        <p>Email:&emsp;<input type="email" id="email" placeholder="Input your email, please" size="45" class="form-input"></p>
+        <p>Link:&emsp;<input type="text" id="link" placeholder="Input your phone or website, please" size="45" class="form-input"></p>
+      </div>
+
+      <p>
+        <textarea name="commentBody" id="commentTextarea" placeholder="Input comment, please" required>
+        </textarea>
+      </p>
+
+      <div style="text-align: center">
+        <button id="submitComment" type="submit" class="from-btn" style="margin: 2px 5px">SUBMIT</button>
+        <button id="resetComment" type="reset" class="from-btn" style="margin: 2px 5px; background-color: red">RESET</button>
+      </div>
+    </div>
+
+    <!--展示文章的所有评论-->
+    <div class="all-comment-container">
+      <div th:if="${commentVos != null}">
+        <div th:each="commentVo : ${commentVos}" class="comment-group">
+          <!--父评论-->
+          <div style="background-color: #cccccc" class="comment-content-parent">
+            <div style="font-family: 'Microsoft YaHei UI';font-size: large;"> <span th:text="${commentVo.commentatorName}">Name</span>：</div>
+            <div th:utext="${commentVo.content}" style="margin-left: 20px;">Comment content</div>
+
+            <div class="comment-reply" style="margin-left: 20px">
+              <span th:text="${commentVo.createTime}">Create</span>
+              <button th:id="${commentVo.id}" class="reply2parent">回复</button>
+            </div>
+
+            <div th:id="${'reply2parentAfter'+commentVo.id}" class="reply2parentHandle"></div>
+          </div>
+
+          <!--子评论-->
+          <div th:if="${commentVo.children != null}" class="comment-content-sub">
+            <div th:each="subcomment : ${commentVo.children}">
+              <div style="font-family: 'Microsoft YaHei UI';font-size: large;">
+                <span th:text="${subcomment.commentatorName}">Name</span>@ <span th:text="${subcomment.pname}">ReplyWho</span>：
+              </div>
+              <div th:utext="${subcomment.content}" style="margin-left: 20px">Sub-Comment content</div>
+
+              <div class="comment-reply" style="margin-left: 20px">
+                <span th:text="${subcomment.createTime}">Update</span>
+                <button th:id="${subcomment.id}" th:attr="rid=${commentVo.id}" class="reply2sub">回复</button>
+              </div>
+
+              <div th:id="${'reply2subAfter'+subcomment.id}" th:attr="rid=${commentVo.id}" class="reply2parentHandle"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 图片点击放大 -->
+  <div id="outerdiv" style="position:fixed;top:5%;left:0;background:rgba(0,0,0,0.7);z-index:2;width:100%;height:100%;display:none;">
+    <div id="innerdiv" style="position:absolute;">
+      <!--注意：img标签的src写#时，会造成对本页面二次请求-->
+      <!--例如：在浏览器输出文章URL：https://blog.hackyle.com/article/hello，点击回车后，后端会接收到两次这个请求，多余的查询-->
+      <img id="bigimg" style="border:3px solid rgb(222 15 170)" src="" />
+    </div>
+  </div>
+
+  <!--回到顶部-->
+  <span id="backToTopBtn" title="回到顶部" onclick="topFunction()">TOP</span>
+
+  <div th:replace="components/footer"></div>
+</body>
+
+<script src="/js/article.js"></script>
+<script src="/js/common.js"></script>
+
+<script>
+  $(function () {
+    //检查浏览器类型，移除仅在PC端才会显示的元素
+    let type = clientType()
+    if("PC" !== type) {
+      $("#articleMetaDiv").removeClass("face")
+      $("#articleMainDiv").removeClass("face")
+      $("#articleCommentDiv").removeClass("face")
+
+      $("aside").remove()
+    }
+
+    //当出现滚动时，就检测一下，是否需要显示回到顶部按钮
+    window.onscroll = function () {
+      scrollFunction();
+    };
+  });
+</script>
+<script>
+  //图片点击放大。Reference:https://blog.csdn.net/white1114579650/article/details/111941631
+  $("img").click(function (){
+    //debugger
+    var _this=$(this);
+    imgShow("#outerdiv","#innerdiv","#bigimg",_this);
+  })
+
+  function imgShow(outerdiv,innerdiv,bigimg,_this){
+    //debugger
+    var src=_this.attr("src");
+    $(bigimg).attr("src",src);
+    $("<img/>").attr("src",src).on('load',function () {
+      //debugger
+      var windowW=$(window).width()
+      var windowH=$(window).height();
+      var realWidth=this.width;
+      var readHeight=this.height;
+      var imgWidth,imgHeight;
+      var scale=0.8;
+      if(realWidth>windowW+scale){
+        imgHeight=windowH*scale;
+        imgWidth=imgHeight/readHeight*realWidth;
+        if(imgWidth>windowW*scale){
+          imgWidth=windowW*scale;
+        }
+      }else if(realWidth>windowW*scale){
+        imgWidth=windowW*scale;
+        imgHeight=imgWidth/realWidth*readHeight;
+      }else {
+        imgWidth=realWidth;
+        imgHeight=readHeight;
+      }
+      $(bigimg).css("width",imgWidth);
+      var w=(windowW-imgWidth)/2;
+      var h=(windowH-imgHeight)/2;
+      $(innerdiv).css({"top":h,"left":w});
+      $(outerdiv).fadeIn("fast");
+    });
+
+    $(outerdiv).click(function (){
+      $(this).fadeOut("fast");
+    });
+  }
+</script>
+</html>

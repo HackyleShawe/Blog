@@ -9,11 +9,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
+/**
+ * 哈希运算工具类
+ */
 public class HashUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(HashUtils.class);
 
     /** 默认的盐 */
-    public static final String DEFAULT_SALT = "blog.hackyle.com:default.salt";
+    public static final String DEFAULT_SALT = "blog.hackyle.com:default_salt";
     private static final String MD5 = "MD5";
     private static final String SHA1 = "SHA-1";
     private static final String SHA256 = "SHA-256";
@@ -66,7 +69,7 @@ public class HashUtils {
         //String sha1 = sha1("hackyle");
         //System.out.println(sha1);
 
-        String sha256 = sha256("hackyle");
+        String sha256 = sha256("Blog.19.hackyle");
         System.out.println(sha256);
     }
 }
