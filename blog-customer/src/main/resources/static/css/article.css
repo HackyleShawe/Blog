@@ -1,0 +1,98 @@
+/*文章标题以及基础信息*/
+.article-meta-container {
+  margin-top: 100px;
+  margin-bottom: 20px;
+  text-align: center;
+  /*align-items: center;*/
+  /*justify-content: center;*/
+  /*height: 50px;*/
+  /*border: solid 2px magenta;*/
+}
+
+/*左边导航栏*/
+.face aside {
+  position: sticky;
+  top: 100px;
+  overflow: auto;
+  padding-left: 15px;
+
+  width: 200px;
+  height: 400px;
+  /*border: solid 1px deeppink;*/
+}
+
+/*文章正文*/
+.face main {
+  /*让文章正文和导航栏处于同一起始线*/
+  /*margin-left稍大于导航栏的width；margi-top等于导航栏的height*/
+  margin-left: 220px;
+  margin-top: -400px;
+
+  /*border: solid 2px darkblue;*/
+}
+
+/*评论区*/
+.article-comment-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+  /*min-height: 500px;*/
+  /*border: solid 2px darkmagenta;*/
+}
+/*新增评论*/
+.article-comment-container .add-comment-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  min-height: 50px;
+  /*background-color: #97f5f0;*/
+  border: solid 2px #b217f4;
+}
+.add-child-comment-container {
+  margin: 5px auto;
+  width: 80%;
+  min-height: 30px;
+  /*text-align: center;*/
+  /*background-color: #97f5f0;*/
+  border: solid 2px #2566f1;
+}
+.article-comment-container .add-comment-container .comment-input {
+  margin-left: 20px;
+  font-size: large;
+}
+/*展示所有评论*/
+.article-comment-container .all-comment-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  min-height: 50px;
+  /*border: solid 2px #f81363;*/
+}
+/*一组评论：父评论、子评论*/
+.article-comment-container .all-comment-container .comment-group {
+  margin: 10px 5px;
+  background-color: #e8e1e1
+  /*border: solid 1px darkmagenta;*/
+}
+/*评论的主体内容*/
+.comment-group .comment-content-parent p {
+  margin: 0;
+  padding: 0;
+  /*font-family: "Microsoft YaHei UI";*/
+  /*font-size: large;*/
+  /*border: dot-dash 1px deeppink;*/
+}
+/*子评论*/
+.comment-group .comment-content-sub {
+  margin-left: 40px;
+  font-family: "Microsoft YaHei UI";
+  font-size: medium;
+}
+.comment-group .comment-content-sub p {
+  margin: 0;
+  padding: 0;
+}
+/*评论的回复*/
+.comment-group .comment-reply {
+  font-family: "Microsoft YaHei UI";
+  font-size: small;
+  font-style: italic;
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hackyle.blog.customer.module.article.mapper.ArticleCategoryMapper">
+
+    <select id="getAllCategory" resultType="com.hackyle.blog.customer.module.article.model.dto.CategoryArticleDto">
+        SELECT category_id, count(category_id) articleNum
+        FROM article_category_relation
+        GROUP BY category_id
+    </select>
+
+    <select id="getArtilceByCategoryId"
+            resultType="com.hackyle.blog.customer.module.article.model.entity.ArticleEntity">
+        SELECT b.*
+        FROM article_category_relation a JOIN article b ON a.article_id = b.id
+        WHERE a.category_id = #{categoryId}
+        order by b.create_time desc
+    </select>
+</mapper>

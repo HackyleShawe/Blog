@@ -1,0 +1,33 @@
+
+# MySQL驱动以及连接参数
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/blog_hackyle_com_251210?useUnicode=true&characterEncoding=utf8&autoReconnect=true&allowMultiQueries=true&useSSL=false
+    username: root
+    password: hackyle
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+
+mybatis-plus:
+  #配置扫描xml
+  mapper-locations: classpath:/mapper/*.xml
+  configuration: # 相当于在MyBatis的主配置文件（MyBatis-config.xml）中配置
+    # 一定要开启峰驼影射，否则就需要在Entity上手动设置属性名对应的字段名
+    map-underscore-to-camel-case: true
+    #这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 自定义配置
+blog:
+  domain: http://localhost:${server.port}
+  article-path-prefix: ${blog.domain}/article
+
+# 文章模块
+article:
+  # 用于ID混淆的字符集。ID用于URL，不能包含URL不支持的字符，URL的路径区分大小写
+  # 注意：一旦确定字符集，不可以修改，否则无法兼容历史生成的数据
+  id-confusion-base-char: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+

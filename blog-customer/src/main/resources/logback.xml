@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+    <!--主要步骤：-->
+    <!--    1.配置日志输出格式-->
+    <!--    2.配置输出地-->
+    <!--    3.配置日志记录器-->
+
+    <!--定义日志文件保存路径属性-->
+    <!--"\"：以当前项目的为根目录。Windows下有时"\"会被解释为磁盘盘符所在根目录，则用".\"替换 -->
+    <!--"/"：Linux下就是从根目录开始的路径，Windows下为项目所在磁盘盘符的根目录 -->
+    <!--最佳实践："./"表示在当前项目所在目录下-->
+    <property name="logDirectory" value="./logs" />
+
+    <!-- 日志文件的名字（可以根据业务进行命名） -->
+    <property name="logFileName" value="blog-customer" />
+
+    <!--配置日志格式
+        name：为这个输出格式取个名字；value：输出的格式控制
+        后期调用：${outputPattern}
+        日志输出格式：
+            %-5level：日志级别
+            %d{yyyy-MM-dd HH:mm:ss.SSS}：日期格式
+            %c：类的完整名称，也可以写为%class
+            %L：行号，也可以写为%line
+            %M：方法名
+            %thread：线程名称
+            %m或者%msg：日志具体的信息
+            %n：换行
+    -->
+    <property name="outputPattern" value="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [traceId=%X{traceId}] [%thread] %c[%L] %M %m%n" />
+
+    <!--
+        Appender配置日志输出地：ConsoleAppender输出到控制台
+    -->
+    <appender name="output2Console" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 过滤一定级别的日志 -->
+        <!-- <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+        </filter> -->
+
+        <!--日志消息格式配置-->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${outputPattern}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+
+
+    <!--
+        输出到文件，并进行日志拆分和归档压缩
+    -->
+    <appender name="output2File" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--指定日志文件名字-->
+        <file>${logDirectory}/${logFileName}.log</file>
+
+        <!--日志输出格式-->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${outputPattern}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+
+        <!-- 指定拆分规则：最多保存90天，单个文件最大50MB -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <fileNamePattern>${logDirectory}/${logFileName}_%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+
+            <!-- 根据日志文件按天回滚，保存时间为90天，90天之前的都将被清理掉 -->
+            <maxHistory>90</maxHistory>
+
+            <!-- 日志总保存量为10GB -->
+            <totalSizeCap>10GB</totalSizeCap>
+
+            <!-- 最大50MB，超过最大值，会重新建一个文件 -->
+            <maxFileSize>50MB</maxFileSize>
+        </rollingPolicy>
+
+        <!-- 追加方式记录日志 -->
+        <append>true</append>
+    </appender>
+
+
+    <!--配置日志记录器-->
+    <!--使用根日志记录器，指定输出级别-->
+    <root level="INFO">
+        <!--如果即想要控制台输出，又想要文件输出，则在这里多配置即可-->
+        <appender-ref ref="output2Console" />
+        <appender-ref ref="output2File" />
+    </root>
+
+</configuration>

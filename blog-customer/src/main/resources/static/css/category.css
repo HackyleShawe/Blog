@@ -1,0 +1,48 @@
+
+.category-container {
+  margin-top: 100px;
+  min-height: 600px;
+  font-size: large;
+}
+
+/*搜索框样式*/
+.category-search {
+  text-align: center;
+  margin: 10px auto;
+}
+.category-search input {
+  outline: none;
+  border: none;
+  border-bottom: 2px solid #f80e0e;
+  font-size: large;
+}
+.category-search button {
+  background-color: #b129f5;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 15px;
+}
+
+/*超链接样式控制*/
+.category-container a {
+  color: #a107f9;
+  text-decoration: none;
+  padding: 7px 15px;
+  transition: all 0.3s ease-in-out;
+}
+.category-container a.current,
+ a:hover {
+  color: #05f91d;
+  font-weight: bold;
+}
+
+/*显示分类下的所有文章*/
+.category-article {
+  margin-top: 80px;
+  min-height: 400px;
+}

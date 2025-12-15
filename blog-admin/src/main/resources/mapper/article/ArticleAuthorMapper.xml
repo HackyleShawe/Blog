@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hackyle.blog.admin.module.article.mapper.ArticleAuthorMapper">
+
+    <insert id="batchInsert">
+        INSERT INTO article_author_relation(author_id, article_id) VALUES
+        <foreach collection="authorIds" item="authorId" separator=",">
+            (#{authorId}, #{articleId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteByArticleIds">
+        DELETE FROM article_author_relation
+        WHERE article_id IN
+        <foreach collection="articleIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getArticleAuthor" resultType="com.hackyle.blog.admin.module.article.model.dto.ArticleAuthorRelationDto">
+        SELECT a.article_id, a.author_id, b.nick_name, b.real_name
+        FROM article_author_relation a JOIN article_author b ON b.id=a.author_id
+        WHERE a.article_id IN
+        <foreach collection="articleIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

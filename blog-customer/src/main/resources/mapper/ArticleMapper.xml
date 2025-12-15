@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hackyle.blog.customer.module.article.mapper.ArticleMapper">
+
+    <resultMap id="BaseResultMap" type="com.hackyle.blog.customer.module.article.model.entity.ArticleEntity">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="summary" column="summary" jdbcType="VARCHAR"/>
+        <result property="keywords" column="keywords" jdbcType="VARCHAR"/>
+        <result property="path" column="path" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="coverImg" column="cover_img" jdbcType="VARCHAR"/>
+        <result property="released" column="released" jdbcType="BIT"/>
+        <result property="commented" column="commented" jdbcType="BIT"/>
+        <result property="deleted" column="deleted" jdbcType="BIT"/>
+        <result property="createBy" column="create_by" jdbcType="BIGINT"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="BIGINT"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="fetchList" resultType="com.hackyle.blog.customer.module.article.model.entity.ArticleEntity">
+        SELECT id, title, summary, keywords, path, content, cover_img, released, commented, deleted, create_by, create_time, update_by, update_time
+        FROM article
+        WHERE deleted=0 AND released=1
+        <if test="keywords!= null and keywords.size() > 0">
+            AND
+            <foreach collection="keywords" item="key" open="(" separator=" OR " close=")">
+                title LIKE CONCAT('%', #{key}, '%') OR summary LIKE CONCAT('%', #{key}, '%') OR keywords LIKE CONCAT('%', #{key}, '%') OR path LIKE CONCAT('%', #{key}, '%')
+            </foreach>
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+
+</mapper>
