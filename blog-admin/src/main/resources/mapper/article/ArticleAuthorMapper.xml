@@ -19,7 +19,7 @@
         </foreach>
     </delete>
 
-    <select id="getArticleAuthor" resultType="com.hackyle.blog.admin.module.article.model.dto.ArticleAuthorRelationDto">
+    <select id="getAuthorByArticleId" resultType="com.hackyle.blog.admin.module.article.model.dto.ArticleAuthorRelationDto">
         SELECT a.article_id, a.author_id, b.nick_name, b.real_name
         FROM article_author_relation a JOIN article_author b ON b.id=a.author_id
         WHERE a.article_id IN

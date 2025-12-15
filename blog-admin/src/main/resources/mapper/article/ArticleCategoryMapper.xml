@@ -19,11 +19,20 @@
         </foreach>
     </delete>
 
-    <select id="getArticleCategory" resultType="com.hackyle.blog.admin.module.article.model.dto.ArticleCategoryRelationDto">
+    <select id="getCategoryByArticleId" resultType="com.hackyle.blog.admin.module.article.model.dto.ArticleCategoryRelationDto">
         SELECT a.article_id, a.category_id, b.name, b.code
         FROM article_category_relation a JOIN article_category b ON b.id=a.category_id
         WHERE  a.article_id IN
         <foreach collection="articleIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getArticleByCategoryId" resultType="com.hackyle.blog.admin.module.article.model.dto.ArticleCategoryRelationDto">
+        SELECT a.article_id, a.category_id, b.name, b.code
+        FROM article_category_relation a JOIN article_category b ON b.id=a.category_id
+        WHERE  a.category_id IN
+        <foreach collection="categoryIds" item="id" separator="," open="(" close=")">
             #{id}
         </foreach>
     </select>

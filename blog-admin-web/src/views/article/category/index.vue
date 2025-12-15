@@ -12,6 +12,7 @@
       <el-table-column label="Name" prop="name" width="100"></el-table-column>
       <el-table-column label="Code" prop="code" width="80"></el-table-column>
       <el-table-column label="Description" prop="description"></el-table-column>
+      <el-table-column label="Articles" prop="articleCount" width="75"></el-table-column>
       <el-table-column label="UpdateTime" prop="updateTime"></el-table-column>
 
       <el-table-column label="Operate">

@@ -1,15 +1,19 @@
 package com.hackyle.blog.admin.module.article.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.hackyle.blog.admin.module.article.mapper.ArticleCategoryMapper;
 import com.hackyle.blog.admin.module.article.mapper.CategoryMapper;
+import com.hackyle.blog.admin.module.article.model.dto.ArticleCategoryRelationDto;
 import com.hackyle.blog.admin.module.article.model.dto.CategoryAddDto;
 import com.hackyle.blog.admin.module.article.model.dto.CategoryQueryDto;
 import com.hackyle.blog.admin.module.article.model.dto.CategoryUpdateDto;
+import com.hackyle.blog.admin.module.article.model.entity.ArticleCategoryRelationEntity;
 import com.hackyle.blog.admin.module.article.model.entity.CategoryEntity;
 import com.hackyle.blog.admin.module.article.model.vo.CategoryVo;
 import com.hackyle.blog.admin.module.article.service.CategoryService;
@@ -23,7 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -31,6 +38,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEnt
         implements CategoryService {
     @Autowired
     private CategoryMapper categoryMapper;
+    @Autowired
+    private ArticleCategoryMapper articleCategoryMapper;
 
     @Override
     public boolean add(CategoryAddDto categoryAddDto) {
@@ -128,9 +137,18 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEnt
 
         PageInfo<CategoryVo> pageInfo = PageHelperUtils.getPageInfo(categoryEntityList, CategoryVo.class);
 
-        for (CategoryVo categoryVo : pageInfo.getList()) {
-            if(categoryVo.getUpdateTime() == null) {
-                categoryVo.setUpdateTime(categoryVo.getCreateTime());
+        if(CollectionUtil.isNotEmpty(categoryEntityList)) {
+            Set<Long> categoryIds = categoryEntityList.stream().map(CategoryEntity::getId).filter(Objects::nonNull).collect(Collectors.toSet());
+            //收集每个分类下的文章数
+            List<ArticleCategoryRelationDto> articleCategory = articleCategoryMapper.getArticleByCategoryId(categoryIds);
+
+            Map<Long, List<ArticleCategoryRelationDto>> categoryMap = articleCategory.stream().collect(Collectors.groupingBy(ArticleCategoryRelationDto::getCategoryId));
+            for (CategoryVo categoryVo : pageInfo.getList()) {
+                List<ArticleCategoryRelationDto> articles = categoryMap.get(categoryVo.getId());
+                categoryVo.setArticleCount(CollectionUtil.isEmpty(articles) ? 0 : articles.size());
+                if(categoryVo.getUpdateTime() == null) {
+                    categoryVo.setUpdateTime(categoryVo.getCreateTime());
+                }
             }
         }
 

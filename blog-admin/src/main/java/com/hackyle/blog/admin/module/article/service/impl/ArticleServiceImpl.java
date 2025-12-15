@@ -429,9 +429,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
 
         Set<Long> articleIds = articleListVoList.stream().map(ArticleListVo::getId).collect(Collectors.toSet());
         //查文章的作者
-        Map<Long, String> articleAuthorMap = getArticleAuthor(articleIds);
+        Map<Long, String> articleAuthorMap = getAuthorByArticleId(articleIds);
         //查文章的分类
-        Map<Long, String> articleCategoryMap = getArticleCategory(articleIds);
+        Map<Long, String> articleCategoryMap = getCategoryByArticleId(articleIds);
 
         for (ArticleListVo articleVo : articleListVoList) {
             //没有进行更新操作时，updateTime值为null，设置为createTime
@@ -448,11 +448,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         return pageInfo;
     }
 
-    private Map<Long, String> getArticleAuthor(Set<Long> articleIds) {
+    private Map<Long, String> getAuthorByArticleId(Set<Long> articleIds) {
         if(CollectionUtil.isEmpty(articleIds)) {
             return Collections.emptyMap();
         }
-        List<ArticleAuthorRelationDto> authors = articleAuthorMapper.getArticleAuthor(articleIds);
+        List<ArticleAuthorRelationDto> authors = articleAuthorMapper.getAuthorByArticleId(articleIds);
         if(CollectionUtil.isEmpty(authors)) {
             return Collections.emptyMap();
         }
@@ -466,11 +466,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         return res;
     }
 
-    private Map<Long, String> getArticleCategory(Set<Long> articleIds) {
+    private Map<Long, String> getCategoryByArticleId(Set<Long> articleIds) {
         if(CollectionUtil.isEmpty(articleIds)) {
             return Collections.emptyMap();
         }
-        List<ArticleCategoryRelationDto> categories = articleCategoryMapper.getArticleCategory(articleIds);
+        List<ArticleCategoryRelationDto> categories = articleCategoryMapper.getCategoryByArticleId(articleIds);
         if(CollectionUtil.isEmpty(categories)) {
             return Collections.emptyMap();
         }

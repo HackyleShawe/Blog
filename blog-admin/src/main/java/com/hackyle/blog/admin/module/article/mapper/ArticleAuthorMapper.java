@@ -15,6 +15,6 @@ public interface ArticleAuthorMapper extends BaseMapper<ArticleAuthorRelationEnt
 
     int deleteByArticleIds(@Param("articleIds") Set<Long> idSet);
 
-    List<ArticleAuthorRelationDto> getArticleAuthor(@Param("articleIds")Set<Long> articleId);
+    List<ArticleAuthorRelationDto> getAuthorByArticleId(@Param("articleIds")Set<Long> articleId);
 
 }

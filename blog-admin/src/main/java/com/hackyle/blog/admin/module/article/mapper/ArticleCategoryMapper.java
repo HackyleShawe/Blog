@@ -15,5 +15,7 @@ public interface ArticleCategoryMapper extends BaseMapper<ArticleCategoryRelatio
 
     int deleteByArticleIds(@Param("articleIds")Set<Long> idSet);
 
-    List<ArticleCategoryRelationDto> getArticleCategory(@Param("articleIds")Set<Long> articleId);
+    List<ArticleCategoryRelationDto> getCategoryByArticleId(@Param("articleIds")Set<Long> articleId);
+
+    List<ArticleCategoryRelationDto> getArticleByCategoryId(@Param("categoryIds")Set<Long> categoryIds);
 }
