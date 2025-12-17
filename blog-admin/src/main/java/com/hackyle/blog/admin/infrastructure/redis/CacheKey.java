@@ -14,8 +14,10 @@ public class CacheKey {
     public static class Auth {
         private static final String PREFIX = UNI_PREFIX + "auth:";
 
+        //每次生成验证码的缓存前缀
+        public static final String CAPTCHA = PREFIX + "cha:";
         //登录者用户id
-        public static final String LOGIN_UID = PREFIX + "uid";
+        public static final String LOGIN_UID = PREFIX + "uid:";
 
     }
 

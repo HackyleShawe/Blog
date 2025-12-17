@@ -3,6 +3,7 @@ package com.hackyle.blog.admin.module.auth.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.hackyle.blog.admin.infrastructure.holder.AuthedContextHolder;
+import com.hackyle.blog.admin.infrastructure.redis.CacheKey;
 import com.hackyle.blog.admin.module.auth.model.dto.LoginDto;
 import com.hackyle.blog.admin.module.auth.model.dto.UserDetailsDto;
 import com.hackyle.blog.admin.module.auth.model.vo.CaptchaVo;
@@ -50,8 +51,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginVo login(LoginDto loginDto) {
-        String cacheCode = (String) redisTemplate.opsForValue().get(loginDto.getUuid());
-        redisTemplate.delete(loginDto.getUuid()); // 清除验证码
+        String key = CacheKey.Auth.CAPTCHA+loginDto.getUuid();
+        String cacheCode = (String) redisTemplate.opsForValue().get(key);
+        redisTemplate.delete(key); // 清除验证码
         if (StringUtils.isBlank(cacheCode)) {
             throw new IllegalArgumentException("验证码不存在或已过期");
         }
@@ -109,7 +111,7 @@ public class AuthServiceImpl implements AuthService {
         String uuid = UUID.randomUUID().toString();
         captchaVo.setUuid(uuid);
         captchaVo.setCode("data:image/png;base64," + base64Code);
-        redisTemplate.opsForValue().set(uuid, kaptchaText, 60L, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(CacheKey.Auth.CAPTCHA+uuid, kaptchaText, 60L, TimeUnit.SECONDS);
 
         return captchaVo;
     }
