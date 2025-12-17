@@ -33,7 +33,7 @@ public class LogTaskThreadPool {
     public LogTaskThreadPool() {
         ioTaskThreadPool = new ThreadPoolExecutor(
                 CPU_COUNT *2,
-                CPU_COUNT *2,
+                CPU_COUNT *4,
                 60L,
                 TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(1000),  //todo 设计合理的阻塞队列
