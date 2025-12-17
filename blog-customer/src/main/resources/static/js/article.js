@@ -116,7 +116,7 @@ function postComment(name, email, link, content, rootId, pid) {
       tinyMCE.get('commentTextarea').setContent('');
       alert("提交成功，请等待管理员审核通过后呈现！")
     } else {
-      alert("提交失败，请重试！")
+      alert(resp.msg)
     }
   }, 'json')
 }
