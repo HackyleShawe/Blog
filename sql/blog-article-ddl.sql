@@ -18,7 +18,7 @@ CREATE TABLE article
     create_by   BIGINT        DEFAULT 0,
     create_time DATETIME      DEFAULT NOW(),
     update_by   BIGINT        DEFAULT 0,
-    update_time DATETIME      DEFAULT NULL ON UPDATE NOW()
+    update_time DATETIME      DEFAULT NOW() ON UPDATE NOW()
 ) COMMENT '文章主体';
 
 DROP TABLE IF EXISTS article_category;
@@ -39,7 +39,7 @@ CREATE TABLE article_category
     create_by   BIGINT        DEFAULT 0,
     create_time DATETIME      DEFAULT NOW(),
     update_by   BIGINT        DEFAULT 0,
-    update_time DATETIME      DEFAULT NULL ON UPDATE NOW(),
+    update_time DATETIME      DEFAULT NOW() ON UPDATE NOW(),
     INDEX       idx_pid (pid)
 ) COMMENT '文章分类';
 
@@ -71,7 +71,7 @@ CREATE TABLE article_author
     create_by   BIGINT        DEFAULT 0,
     create_time DATETIME      DEFAULT NOW(),
     update_by   BIGINT        DEFAULT 0,
-    update_time DATETIME      DEFAULT NULL ON UPDATE NOW()
+    update_time DATETIME      DEFAULT NOW() ON UPDATE NOW()
 ) COMMENT '文章作者';
 
 DROP TABLE IF EXISTS article_author_relation;
@@ -105,7 +105,7 @@ CREATE TABLE article_comment
     create_by         BIGINT       DEFAULT 0,
     create_time       DATETIME     DEFAULT NOW(),
     update_by         BIGINT       DEFAULT 0,
-    update_time       DATETIME     DEFAULT NULL ON UPDATE NOW(),
+    update_time       DATETIME     DEFAULT NOW() ON UPDATE NOW(),
     INDEX             idx_article_id (article_id)
 ) COMMENT '文章评论';
 
@@ -121,7 +121,7 @@ CREATE TABLE article_file
     create_by   BIGINT   DEFAULT 0,
     create_time DATETIME DEFAULT NOW(),
     update_by   BIGINT   DEFAULT 0,
-    update_time DATETIME DEFAULT NULL ON UPDATE NOW()
+    update_time DATETIME DEFAULT NOW() ON UPDATE NOW()
 ) COMMENT '文章静态资源文件（图片、视频、音乐、文档等）';
 
 DROP TABLE IF EXISTS article_visit_log;
