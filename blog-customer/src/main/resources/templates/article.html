@@ -73,11 +73,12 @@
     <h1 th:text="${articleVo.title}">title</h1>
 
     <p>
-      <i th:if="${articleVo.categoryNames != null}">文章分类：<span th:text="${articleVo.categoryNames}"> </span>；</i>
-      <i th:if="${articleVo.authorNames != null}">作者：<span th:text="${articleVo.authorNames}">Hackyle</span>；</i> <br/>
+      <i th:if="${articleVo.categoryNames != null}">文章分类：<span th:text="${articleVo.categoryNames}"> </span>&emsp;</i>
+      <i th:if="${articleVo.authorNames != null}">作者：<span th:text="${articleVo.authorNames}">Hackyle</span></i> <br/>
     </p>
     <p>
-      <i th:if="${articleVo.updateTime != null}">更新时间：<span th:text="${articleVo.updateTime}"></span></i>
+      <i th:if="${articleVo.createTime != null}">创建时间：<span th:text="${articleVo.createTime}"></span>&emsp;</i>
+      <i th:if="${articleVo.updateTime != null}">最近一次更新时间：<span th:text="${articleVo.updateTime}"></span></i>
     </p>
 
     <!--不显示的页面属性-->

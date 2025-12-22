@@ -49,6 +49,8 @@ public class ArticleVo {
      */
     private Boolean commented;
 
+    private String createTime;
+
     private String updateTime;
 
     /**
