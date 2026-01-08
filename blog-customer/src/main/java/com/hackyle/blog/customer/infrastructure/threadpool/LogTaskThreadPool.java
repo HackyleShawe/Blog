@@ -1,4 +1,4 @@
-package com.hackyle.blog.admin.infrastructure.threadpool;
+package com.hackyle.blog.customer.infrastructure.threadpool;
 
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;

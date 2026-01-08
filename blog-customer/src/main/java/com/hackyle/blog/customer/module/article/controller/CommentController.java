@@ -7,6 +7,7 @@ import com.hackyle.blog.customer.module.article.model.vo.CommentVo;
 import com.hackyle.blog.customer.module.article.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +28,7 @@ public class CommentController {
      * 新增文章评论
      */
     @PostMapping
-    public ApiResponse<String> add(CommentAddDto commentAddDto, HttpServletRequest request) {
+    public ApiResponse<String> add(@Validated CommentAddDto commentAddDto, HttpServletRequest request) {
         log.info("新增文章评论-Controller层入参-commentAddDto={}", JSON.toJSONString(commentAddDto));
 
         boolean commented = commentService.add(commentAddDto);

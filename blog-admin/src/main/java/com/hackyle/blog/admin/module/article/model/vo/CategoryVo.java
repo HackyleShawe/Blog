@@ -44,4 +44,9 @@ public class CategoryVo {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime createTime;
 
+    /**
+     * 分类下的文章数量
+     */
+    private Integer articleCount;
+
 }

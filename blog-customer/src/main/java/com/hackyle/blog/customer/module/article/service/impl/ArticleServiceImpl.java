@@ -90,9 +90,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         for (ArticleEntity articleEntity : articleEntities) {
             ArticleVo articleVo = BeanCopyUtils.copy(articleEntity, ArticleVo.class);
             articleVo.setUrl(articlePathPrefix + articleEntity.getPath());
-
-            LocalDateTime updateTime = articleEntity.getUpdateTime() == null ? articleEntity.getCreateTime() : articleEntity.getUpdateTime();
-            articleVo.setUpdateTime(updateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            articleVo.setUpdateTime(articleEntity.getUpdateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            articleVo.setCreateTime(articleEntity.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
             List<CategoryDto> categoryDtos = articleCategoryMap.get(articleEntity.getId());
             if(CollectionUtil.isNotEmpty(categoryDtos)) {
@@ -138,6 +137,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         ArticleVo articleVo = BeanCopyUtils.copy(articleEntity, ArticleVo.class);
         articleVo.setUrl(articlePathPrefix + articleEntity.getPath());
         articleVo.setUpdateTime(articleEntity.getUpdateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        articleVo.setCreateTime(articleEntity.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
         List<CategoryDto> categoryDtos = categoryService.getByArticleIds(Collections.singletonList(articleEntity.getId()));
         if(CollectionUtil.isNotEmpty(categoryDtos)) {

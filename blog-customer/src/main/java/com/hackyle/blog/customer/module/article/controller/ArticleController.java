@@ -1,12 +1,15 @@
 package com.hackyle.blog.customer.module.article.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.hackyle.blog.customer.infrastructure.threadpool.LogTaskThreadPool;
 import com.hackyle.blog.customer.module.article.model.dto.ArticleQueryDto;
+import com.hackyle.blog.customer.module.article.model.entity.VisitLogEntity;
 import com.hackyle.blog.customer.module.article.model.vo.ArticleVo;
 import com.hackyle.blog.customer.module.article.model.vo.CommentVo;
 import com.hackyle.blog.customer.module.article.model.vo.MetaVo;
 import com.hackyle.blog.customer.module.article.service.ArticleService;
 import com.hackyle.blog.customer.module.article.service.CommentService;
+import com.hackyle.blog.customer.module.article.service.VisitLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,11 @@ public class ArticleController {
     private ArticleService articleService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private VisitLogService visitLogService;
+    @Autowired
+    private LogTaskThreadPool logTaskThreadPool;
+
 
     /**
      * 分页获取所有文章
@@ -71,6 +79,7 @@ public class ArticleController {
             modelAndView.setViewName("common/404");
             return modelAndView;
         }
+        long startTime = System.currentTimeMillis();
 
         //查文章主体内容
         ArticleVo articleVo = articleService.get(articleCode);
@@ -89,6 +98,14 @@ public class ArticleController {
         List<CommentVo> commentVos = commentService.getTopByArticle(articleVo.getId());
         modelAndView.addObject("commentVos", commentVos);
 
+        //保存访问日志。为什么不在service做？统计耗时时更精确
+        VisitLogEntity visitLogEntity = new VisitLogEntity();
+        visitLogEntity.setArticleId(articleVo.getId());
+        visitLogEntity.setTimeUse((int) (System.currentTimeMillis() - startTime));
+        //提交任务到线程池，异步保存日志，注意：将耗时的操作放在异步线程中完成，例如解析IP地址
+        logTaskThreadPool.execute(() -> visitLogService.add(visitLogEntity));
+
+
         modelAndView.setViewName("article");
         return modelAndView;
     }
@@ -105,6 +122,7 @@ public class ArticleController {
             modelAndView.setViewName("index");
             return modelAndView;
         }
+        long startTime = System.currentTimeMillis();
 
         //查文章主体内容，文章完整path为/{categoryCode}/{articleCode}
         ArticleVo articleVo = articleService.get(categoryCode, articleCode);
@@ -119,6 +137,13 @@ public class ArticleController {
         //查文章顶级评论
         List<CommentVo> commentVos = commentService.getTopByArticle(articleVo.getId());
         modelAndView.addObject("commentVos", commentVos);
+
+        //保存访问日志。为什么不在service做？统计耗时时更精确
+        VisitLogEntity visitLogEntity = new VisitLogEntity();
+        visitLogEntity.setArticleId(articleVo.getId());
+        visitLogEntity.setTimeUse((int) (System.currentTimeMillis() - startTime));
+        //提交任务到线程池，异步保存日志，注意：将耗时的操作放在异步线程中完成，例如解析IP地址
+        logTaskThreadPool.execute(() -> visitLogService.add(visitLogEntity));
 
         modelAndView.setViewName("article");
         return modelAndView;

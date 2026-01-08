@@ -2,9 +2,9 @@ package com.hackyle.blog.admin.module.auth.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
+import com.hackyle.blog.admin.infrastructure.redis.CacheKey;
 import com.hackyle.blog.admin.module.auth.model.dto.UserDetailsDto;
 import com.hackyle.blog.admin.module.auth.service.LoginUserCacheService;
-import com.hackyle.blog.common.constant.CacheKeyConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,13 +36,13 @@ public class LoginUserCacheServiceImpl implements LoginUserCacheService {
 
     @Override
     public void putCache(UserDetailsDto userDetails) {
-        String key = CacheKeyConstants.System.LOGIN_UID + userDetails.getUserId();
+        String key = CacheKey.Auth.LOGIN_UID + userDetails.getUserId();
         redisTemplate.opsForValue().set(key, userDetails, expireMinutes, TimeUnit.MINUTES);
     }
 
     @Override
     public void refreshCache(UserDetailsDto userDetailsDto) {
-        String key = CacheKeyConstants.System.LOGIN_UID + userDetailsDto.getUserId();
+        String key = CacheKey.Auth.LOGIN_UID + userDetailsDto.getUserId();
 
         Long expire = redisTemplate.getExpire(key, TimeUnit.MINUTES);
         if(expire <= 20) { //登录态有效期小于5分钟，刷新缓存
@@ -53,7 +53,7 @@ public class LoginUserCacheServiceImpl implements LoginUserCacheService {
 
     @Override
     public UserDetailsDto getCache(Long userId) {
-        String key = CacheKeyConstants.System.LOGIN_UID + userId;
+        String key = CacheKey.Auth.LOGIN_UID + userId;
 
         Object object = redisTemplate.opsForValue().get(key);
         if (object == null) {
@@ -65,13 +65,13 @@ public class LoginUserCacheServiceImpl implements LoginUserCacheService {
 
     @Override
     public boolean removeCache(Long userId) {
-        String key = CacheKeyConstants.System.LOGIN_UID + userId;
+        String key = CacheKey.Auth.LOGIN_UID + userId;
         return redisTemplate.delete(key);
     }
 
     @Override
     public List<UserDetailsDto> getAll() {
-        String keyPattern = CacheKeyConstants.System.LOGIN_UID + "*";
+        String keyPattern = CacheKey.Auth.LOGIN_UID + "*";
         Set<String> keys = redisTemplate.keys(keyPattern);
 
         List<UserDetailsDto> res = new ArrayList<>();

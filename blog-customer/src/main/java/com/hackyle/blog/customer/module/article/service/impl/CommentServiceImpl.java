@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hackyle.blog.common.enums.DeletedEnum;
 import com.hackyle.blog.common.enums.StatusEnum;
 import com.hackyle.blog.common.exception.BizException;
+import com.hackyle.blog.common.ip.IpUtils;
 import com.hackyle.blog.common.util.BeanCopyUtils;
 import com.hackyle.blog.common.util.SnowFlakeIdUtils;
+import com.hackyle.blog.customer.infrastructure.redis.CacheKey;
 import com.hackyle.blog.customer.module.article.mapper.ArticleMapper;
 import com.hackyle.blog.customer.module.article.mapper.CommentMapper;
 import com.hackyle.blog.customer.module.article.model.dto.CommentAddDto;
@@ -15,6 +17,7 @@ import com.hackyle.blog.customer.module.article.model.entity.CommentEntity;
 import com.hackyle.blog.customer.module.article.model.vo.CommentVo;
 import com.hackyle.blog.customer.module.article.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -41,10 +45,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, CommentEntity
 
     @Override
     public boolean add(CommentAddDto addDto) {
-        //恶意提交判定：对某一IP，6小时内对某target限制提交3次，对某父评论限制提交5次
-        //if(badRequest(request, commentAddDto)) {
-        //    return ApiResponse.fail(ResponseEnum.FRONT_END_ERROR.getCode(), ResponseEnum.FRONT_END_ERROR.getMessage(), "恶意请求，请稍后重试！");
-        //}
+        //恶意提交判定
+        badRequestCheck(addDto);
 
         //检查被评论的文章是否存在
         ArticleEntity articleEntity = articleMapper.selectById(addDto.getArticleId());
@@ -69,6 +71,40 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, CommentEntity
         }
 
         return true;
+    }
+
+
+    private void badRequestCheck(CommentAddDto commentAddDto) {
+        String publicIp = IpUtils.getPublicIp(); //注意，这里可能获取到的ip是unknown
+        //5小时内对某article限制提交5次
+        String articleIpKey = CacheKey.PREFIX + commentAddDto.getArticleId() + ":" +publicIp;
+        String articleIpVal = valueOperations.get(articleIpKey);
+        if(StringUtils.isBlank(articleIpVal)) {
+            valueOperations.set(articleIpKey, "1", 5, TimeUnit.HOURS);
+        } else {
+            int articleIpInt = Integer.parseInt(articleIpVal);
+            if(articleIpInt > 5) {
+                log.info("对文章的恶意评论-articleIpKey={},articleIpVal={}", articleIpKey, articleIpVal);
+                throw new BizException("您对该文章的评论过于频繁，请稍后再试！");
+            }
+            valueOperations.increment(articleIpKey, 1);
+        }
+
+        //5小时内对某父评论限制提交5次
+        if(commentAddDto.getPid() != null) {
+            String pidIpKey = CacheKey.PREFIX + commentAddDto.getPid() + ":" +publicIp;
+            String pidIpVal = valueOperations.get(pidIpKey);
+            if(StringUtils.isBlank(pidIpVal)) {
+                valueOperations.set(pidIpKey, "1", 5, TimeUnit.HOURS);
+            } else {
+                int reqValInt = Integer.parseInt(pidIpVal);
+                if(reqValInt > 5) {
+                    log.info("对父评论的恶意评论-pidIpKey={},pidIpVal={}", pidIpKey, pidIpVal);
+                    throw new BizException("您对该评论的评论过于频繁，请稍后再试！");
+                }
+                valueOperations.increment(pidIpKey, 1);
+            }
+        }
     }
 
     /**
