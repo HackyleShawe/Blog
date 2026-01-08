@@ -41,11 +41,16 @@ import javax.servlet.http.HttpServletRequest;
 public class GlobalExceptionHandler {
 
     //@ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    @ResponseBody
     @ExceptionHandler(BizException.class)
-    public ApiResponse<Exception> bizExceptionHandler(HttpServletRequest request, BizException exception) {
+    public ModelAndView bizExceptionHandler(HttpServletRequest request, BizException exception) {
         log.error("出现BizException异常：", exception);
-        return ApiResponse.fail(HttpStatus.UNPROCESSABLE_ENTITY.value(), exception.getMessage());
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("code", HttpStatus.NOT_FOUND);
+        modelAndView.addObject("message", exception.getMessage());
+        modelAndView.addObject("url", request.getRequestURL());
+        modelAndView.setViewName("common/404");
+        return modelAndView;
     }
 
     //@ResponseStatus(HttpStatus.NOT_FOUND)
