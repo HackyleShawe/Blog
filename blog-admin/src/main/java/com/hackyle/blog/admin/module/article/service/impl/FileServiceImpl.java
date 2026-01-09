@@ -141,32 +141,33 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
         return file;
     }
 
+    /**
+     * 保存文章中的图片，并关联到文章中
+     * @param articleId 文章ID
+     * @param imgUrls 从文章内容中解析出的图片连接
+     */
     @Override
     public boolean saveImgFile(long articleId, Set<String> imgUrls) {
-        //找出已经上传但是没有归属到具体文章的图片
+        //找出已经上传但是没有归属到具体文章的图片。注意：如果本次修改没有新增图片，则将会没有数据
         LambdaQueryWrapper<FileEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(FileEntity::getArticleId, 0);
         queryWrapper.eq(FileEntity::getDeleted, Boolean.FALSE);
         List<FileEntity> newImgFiles = this.list(queryWrapper);
-        if (CollectionUtil.isEmpty(newImgFiles)) {
-            throw new BizException("文章中的图片上传失败，请检查");
-        }
-        if (imgUrls.size() > newImgFiles.size()) {
-            throw new BizException("文章中的部分图片上传失败，请检查");
-        }
-
-        //从已经上传但是还没有归属到具体文章的图片中，过滤出本次文章保存的图片
-        List<FileEntity> existsImgFiles = newImgFiles.stream()
-                .filter(ele -> imgUrls.contains(ele.getFileLink()))
-                .collect(Collectors.toList());
-        if (CollectionUtil.isNotEmpty(existsImgFiles)) {
-            List<Long> existsIds = existsImgFiles.stream().map(FileEntity::getId).distinct().collect(Collectors.toList());
-            LambdaUpdateWrapper<FileEntity> updateWrapper = new LambdaUpdateWrapper<>();
-            updateWrapper.in(FileEntity::getId, existsIds);
-            updateWrapper.set(FileEntity::getArticleId, articleId);
-            boolean update = this.update(updateWrapper);
-            if (!update) {
-                throw new BizException("关联已上传的图片与文章失败");
+        //如果有新增图片，则将其关联到该文章中
+        if(CollectionUtil.isNotEmpty(newImgFiles)) {
+            //从已经上传但是还没有归属到具体文章的图片中，过滤出本次文章保存的图片
+            List<FileEntity> existsImgFiles = newImgFiles.stream()
+                    .filter(ele -> imgUrls.contains(ele.getFileLink()))
+                    .collect(Collectors.toList());
+            if (CollectionUtil.isNotEmpty(existsImgFiles)) {
+                List<Long> existsIds = existsImgFiles.stream().map(FileEntity::getId).distinct().collect(Collectors.toList());
+                LambdaUpdateWrapper<FileEntity> updateWrapper = new LambdaUpdateWrapper<>();
+                updateWrapper.in(FileEntity::getId, existsIds);
+                updateWrapper.set(FileEntity::getArticleId, articleId);
+                boolean update = this.update(updateWrapper);
+                if (!update) {
+                    throw new BizException("关联已上传的图片与文章失败");
+                }
             }
         }
 
