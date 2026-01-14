@@ -50,7 +50,7 @@
       <div class="box" th:each="article : ${pageInfo.getList()}">
         <div class="article-abstract">
           <a th:href="${article.url}" target="_blank">
-            <p class="title"><h1><span th:text="${article.title}">title</span> </h1>
+            <h2 class="title"><span th:text="${article.title}">title</span> </h2>
             <p class="summary"><span th:text="${article.summary}">summary</span></p>
             <p class="meta">
               <span>UpdateTime: <span th:text="${article.updateTime == null ? article.createTime : article.updateTime}">UpdateTime</span></span>&emsp;

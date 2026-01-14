@@ -65,8 +65,8 @@
   align-items: center;
   justify-content: left;
   width: 850px;
-  height: 160px;
-  margin: 10px;
+  height: 130px;
+  margin: 7px;
   border-radius: 10px;
   box-shadow: 2px 4px 5px rgba(0, 0, 0, 0.3);
   transform: translateX(400%);
@@ -81,10 +81,6 @@
   transform: translateX(0);
 }
 
-.box h2 {
-  font-size: 45px;
-}
-
 .box a:link { text-decoration: none; color: #fff}
 .box a:active { text-decoration:none; color: #fff}
 .box a:hover { text-decoration:none; color: #fff}
@@ -93,11 +89,18 @@
 
 .article-abstract {
   margin-left: 15px;
+  white-space: nowrap;      /* 不换行 */
+}
+.article-abstract .title {
+  width: 800px;
+  overflow: hidden;         /* 超出隐藏 */
+  text-overflow: ellipsis;  /* 超出显示省略号 */
 }
 .article-abstract .summary {
-  /*当有内容超出时，直接隐藏，不让其超出div*/
-  overflow: hidden;
   max-height: 40px;
+  width: 830px;
+  overflow: hidden;         /* 超出隐藏 */
+  text-overflow: ellipsis;  /* 超出显示省略号 */
 }
 .article-abstract .meta {
   margin-top: 5px;
