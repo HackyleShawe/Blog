@@ -36,8 +36,8 @@ auth:
     header: Authorization
     # 令牌密钥
     secret: abcdefghijklmnopqrstuvwxyz
-    # 令牌有效期（默认120分钟）
-    expireMinutes: 120
+    # 令牌有效期（设定为12h，防止突然登录态失效导致操作失败）
+    expireMinutes: 720
 
 # 文章模块
 article:
