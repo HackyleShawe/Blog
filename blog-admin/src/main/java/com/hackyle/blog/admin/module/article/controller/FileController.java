@@ -113,6 +113,15 @@ public class FileController {
     }
 
     /**
+     * 删除没有绑定文章的文件
+     */
+    @GetMapping("/clean")
+    public ApiResponse<String> clean() throws Exception {
+        boolean result = fileService.clean();
+        return result ? ApiResponse.ok() : ApiResponse.fail("清除失败");
+    }
+
+    /**
      * 文件修改：可以修改文件名、文件链接，移动文件位置
      */
     @PutMapping

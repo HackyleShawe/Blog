@@ -221,6 +221,32 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
     }
 
     @Override
+    public boolean clean() {
+        LambdaQueryWrapper<FileEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(FileEntity::getArticleId, 0);
+
+        List<FileEntity> files = this.list(queryWrapper);
+        log.info("查找删除没有绑定文章的文件files={}", JSON.toJSONString(files));
+        if (CollectionUtil.isEmpty(files)) {
+            return true;
+        }
+
+        List<Long> delIds = new ArrayList<>();
+        for (FileEntity fileEntity : files) {
+            delIds.add(fileEntity.getId());
+            String filePath = fileEntity.getFileLink().substring(resConfig.getDomain().length());
+            String fullPath = resConfig.getStoragePath() + filePath;
+            File file = new File(fullPath);
+            file.delete(); //注意：如果文件删除失败，数据库执行成功，则这个文件将不会被清除
+        }
+        //返回值的含义是：操作是否执行成功，而不是是否真的删除了数据
+        boolean del = this.removeBatchByIds(delIds);
+        log.info("删除没有绑定文章的文件-delIds={},deleted={}", JSON.toJSONString(delIds), del);
+
+        return del;
+    }
+
+    @Override
     public boolean update(FileUpdateDto updateDto) {
         Long id = updateDto.getId();
         FileEntity fileEntity = this.getById(id);
