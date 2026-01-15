@@ -29,6 +29,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +85,9 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
             //关闭流，否则删除访问文件时显示被占用，导致删除失败
             inputStream.close();
             outputStream.close();
+
+            //设置文件为可读
+            Files.setPosixFilePermissions(Paths.get(targetFile), PosixFilePermissions.fromString("rw-r--r--"));
 
             fileEntity.setFileLink(resConfig.getDomain() + pathSplit + nameByUUID);
             fileEntities.add(fileEntity);
@@ -194,21 +201,19 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
     public boolean del(Set<Long> ids) {
         List<FileEntity> fileEntities = this.listByIds(ids);
         if (CollectionUtil.isNotEmpty(fileEntities)) {
-            return true;
+            return false;
         }
 
         List<Long> delIds = new ArrayList<>();
         for (FileEntity fileEntity : fileEntities) {
+            delIds.add(fileEntity.getId());
             String filePath = fileEntity.getFileLink().substring(resConfig.getDomain().length());
             String fullPath = resConfig.getStoragePath() + filePath;
             File file = new File(fullPath);
-
-            if(file.delete()) {
-                delIds.add(fileEntity.getId());
-                //throw new RuntimeException("文件删除失败！");
-            }
+            file.delete(); //注意：如果文件删除失败，数据库执行成功，则这个文件将不会被清除
         }
 
+        //返回值的含义是：操作是否执行成功，而不是是否真的删除了数据
         boolean del = this.removeBatchByIds(delIds);
         log.info("文件删除-delIds={},deleted={}", JSON.toJSONString(delIds), del);
 
