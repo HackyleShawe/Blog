@@ -30,7 +30,7 @@ public class CacheKey {
         //系统配置
         public static final String CONFIG_HASH_KEY = PREFIX + "config";
         //字典
-        public static final String DICT_KEY = PREFIX + "dict:";
+        public static final String DICT_HASH_KEY = PREFIX + "dict";
     }
 
 

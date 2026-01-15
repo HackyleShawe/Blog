@@ -57,6 +57,10 @@ public class CacheConfigServiceImpl implements CacheConfigService {
         }
         String key = CacheKey.Sys.CONFIG_HASH_KEY;
         Object object = redisTemplate.opsForHash().get(key, configKey);
+        if (object == null) {
+            return null;
+        }
+
         //return JSON.parseObject(JSON.toJSONString(object), SysConfigEntity.class); 导出原始JSON串外再套了一层JSON
         return JSON.parseObject((String) object, SysConfigEntity.class);
     }
@@ -64,6 +68,10 @@ public class CacheConfigServiceImpl implements CacheConfigService {
     public SysConfigEntity getCache(long configId) {
         String key = CacheKey.Sys.CONFIG_HASH_KEY;
         Object object = redisTemplate.opsForHash().get(key, configId);
+        if (object == null) {
+            return null;
+        }
+
         return JSON.parseObject((String) object, SysConfigEntity.class);
     }
 
