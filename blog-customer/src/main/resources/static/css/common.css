@@ -148,7 +148,7 @@ nav .search-box .search-btn {
   right: 2%;
   cursor: pointer;
   display: none;
-  color: red;
+  color: #0051ff;
   font-size: larger;
 }
 /*------------------------------back to top end------------------------------*/
@@ -162,7 +162,7 @@ nav .search-box .search-btn {
   padding-top: 10px;
   padding-bottom: 20px;
   text-align: center;
-  background-color: #ec7fff;
+  background-color: #eaf1f1;
 }
 
 .footer-container .desc {
