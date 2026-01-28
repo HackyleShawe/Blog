@@ -7,13 +7,13 @@
   <meta name="robots" content="all">
 
   <meta name="author" content="Hackyle; Kyle Shawe">
-  <meta name="reply-to" content="ks971916;1792715147@qq.com">
+  <meta name="reply-to" content="wechat:ks971916;1792715147@qq.com;kyleshawe@outlook.com">
   <meta name="generator" content="Sublime Text 3; VSCode">
 
   <!--<meta name="keywords" th:content="${blogPage.keywords}">-->
   <meta name="keywords" content="Hackyle Shawe; Kyle; hackyle.com; blog.hackyle.com">
   <meta name="description" content="你好，欢迎来到我的技术博客。我是一名Java后端开发工程师，主要技术栈是Spring生态、RocketMQ与Kafka、MySQL和Redis、Docker、Nginx。此外，对前端的一些技术也略知一二。本站点记录我学习和工作过程中的一些基础技术。">
-  <meta name="copyright" content="Copy Right: 2022 HACKYLE. All rights reserved">
+  <meta name="copyright" content="Copy Right: 2022-2026 HACKYLE. All rights reserved">
 
   <!-- 给网站设置图标 -->
   <link rel="icon" href="/img/favicon.ico">
@@ -158,9 +158,9 @@
     console.log("paramData: ", paramData)
 
     //提交评论
-    $.post("/feedbackMessage/add", paramData, function (resp) {
-      console.log(resp)
-      if(resp.state) {
+    $.post("/website/feedback", paramData, function (resp) {
+      console.log("提交评论response", resp)
+      if(200 === resp.code) {
         //响应成功
         $("#name").val('')
         $("#email").val('')
@@ -168,6 +168,10 @@
         //tinyMCE.activeEditor.setContent('')
         tinyMCE.get('feedbackTextarea').setContent('');
         alert("提交成功！")
+      } else if(400 === resp.code) {
+        alert(resp.msg)
+      } else if(500 === resp.code) {
+        alert(resp.msg)
       } else {
         alert("提交失败，请重试！")
       }

@@ -15,12 +15,5 @@ public interface WebsiteFeedbackService extends IService<WebsiteFeedbackEntity> 
 
     boolean add(FeedbackAddDto addDto);
 
-    boolean del(Set<Long> idSet);
-
-    boolean update(FeedbackUpdateDto updateDto);
-
-    FeedbackVo get(Long id);
-
-    PageInfo<FeedbackVo> list(FeedbackQueryDto queryDto);
 
 }

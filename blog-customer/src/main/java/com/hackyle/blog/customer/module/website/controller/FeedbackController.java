@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
@@ -32,58 +33,17 @@ public class FeedbackController {
     private WebsiteFeedbackService websiteFeedbackService;
 
 
+    @ResponseBody
     @PostMapping
-    public ApiResponse<?> add(@Validated @RequestBody FeedbackAddDto addDto) {
+    public ApiResponse<?> add(@Validated FeedbackAddDto addDto) {
         log.info("新增留言反馈-Controller层入参-addDto={}", JSON.toJSONString(addDto));
 
-        boolean status =  websiteFeedbackService.add(addDto);
-        return status ? ApiResponse.ok() : ApiResponse.fail();
-    }
-
-    @DeleteMapping
-    public ApiResponse<?> del(@RequestParam("ids")String ids) {
-        log.info("删除留言反馈-Controller层入参-ids={}", ids);
-        if(StringUtils.isBlank(ids)) {
-            throw new IllegalArgumentException("入参id错误，请检查");
+        //单独捕获，否则返回400页面
+        try {
+            boolean status =  websiteFeedbackService.add(addDto);
+            return status ? ApiResponse.ok() : ApiResponse.fail();
+        } catch (Exception e) {
+            return ApiResponse.fail(e.getMessage());
         }
-
-        String[] idSplit = ids.split(",");
-        Set<Long> idSet = new HashSet<>();
-        for (String idStr : idSplit) {
-            idSet.add(Long.parseLong(idStr));
-        }
-
-        boolean status =  websiteFeedbackService.del(idSet);
-        return status ? ApiResponse.ok() : ApiResponse.fail();
-    }
-
-    @PutMapping
-    public ApiResponse<String> update(@RequestBody FeedbackUpdateDto updateDto) {
-        log.info("修改留言反馈-Controller层入参-updateDto={}", JSON.toJSONString(updateDto));
-        boolean status = websiteFeedbackService.update(updateDto);
-        return status ? ApiResponse.ok() : ApiResponse.fail();
-    }
-
-    @GetMapping
-    public ApiResponse<FeedbackVo> get(@RequestParam("id") Long id) {
-        log.info("获取留言反馈详情-Controller层入参-id={}", id);
-
-        if(id == null || id < 1) {
-            throw new IllegalArgumentException("入参不能为空");
-        }
-
-        FeedbackVo FeedbackVo = websiteFeedbackService.get(id);
-        return ApiResponse.ok(FeedbackVo);
-    }
-
-    /**
-     * 根据查询条件获取留言反馈
-     */
-    @PostMapping("/list")
-    public ApiResponse<PageInfo<FeedbackVo>> list(@RequestBody FeedbackQueryDto queryDto) {
-        log.info("根据查询条件获取留言反馈-Controller层入参-queryDto={}", JSON.toJSONString(queryDto));
-
-        PageInfo<FeedbackVo> pageInfo = websiteFeedbackService.list(queryDto);
-        return ApiResponse.ok(pageInfo);
     }
 }
