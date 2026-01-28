@@ -61,7 +61,8 @@
 
         <!--TinyMCE富文本编辑器-->
         <el-form-item prop="content" style="margin-bottom: 30px;">
-          <Tinymce ref="editor" v-model="articleDataForm.content" :height="400" />
+          <!--save：可以在子组件Tinymec中调用父组件的submitForm方法-->
+          <Tinymce ref="editor" v-model="articleDataForm.content" :height="400" @save="submitForm"/>
         </el-form-item>
 
       </div>
@@ -193,6 +194,13 @@ export default {
     // https://github.com/PanJiaChen/vue-element-admin/issues/1221
     this.tempRoute = Object.assign({}, this.$route)
   },
+
+  mounted() {
+    window.addEventListener('keydown', this.handleKeydown)
+  },
+  beforeDestroy() {
+    window.removeEventListener('keydown', this.handleKeydown)
+  },
   methods: {
     fetchArticleData(id) {
       articleApi.get(id).then(response => {
@@ -310,7 +318,19 @@ export default {
       }
 
     },
+
+    //当按下Ctrl+S时，调用自定义的函数
+    handleKeydown(e) {
+      // Windows / Linux：Ctrl + S
+      // Mac：Command + S
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault() // 阻止浏览器保存
+        console.log("save by Ctrl + s")
+        this.submitForm() //调用保存接口
+      }
+    },
   }
+
 }
 </script>
 
