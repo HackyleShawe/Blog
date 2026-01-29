@@ -75,18 +75,6 @@
 </body>
 
 <script src="/js/common.js"></script>
-
-<!--响应式处理-->
-<script>
-  $(function () {
-    //检查浏览器类型，移除仅在PC端才会显示的元素
-    let type = clientType()
-    if("PC" !== type) {
-      $("#feedbackDiv").removeClass("face")
-    }
-  });
-</script>
-
 <!--TinyMCE初始化-->
 <script>
   tinymce.init({

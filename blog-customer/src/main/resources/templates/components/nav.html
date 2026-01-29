@@ -2,13 +2,15 @@
   头部导航栏
 -->
 <nav xmlns:th="http://www.thymeleaf.org">
-  <div class="nav-container">
+   <div class="nav-container">
     <div class="logo"><a href="/">HACKYLE</a></div>
-    <ul class="link-container">
+
+    <!-- 汉堡按钮（仅移动端显示） -->
+    <div class="nav-toggle" id="navToggle">☰</div>
+    <ul class="link-container" id="navMenu">
       <li><a href="/">Home</a></li>
       <li><a href="/category">Category</a></li>
-      <!--<li><a href="/snippet">Snippet</a></li>-->
-      <li><a href="/feedback">Feedback</a></li>
+      <!--<li><a href="/feedback">Feedback</a></li>-->
       <li><a href="/about">About</a></li>
     </ul>
 

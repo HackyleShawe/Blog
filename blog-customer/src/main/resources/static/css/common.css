@@ -35,12 +35,6 @@ footer, header, menu, nav, section {
   display: block;
 }
 
-/*版心*/
-.face {
-  width: 1000px;
-  margin: 0 auto;
-}
-
 /*通用样式*/
 .form-input {
   /*将输入框变成下划线*/
@@ -57,7 +51,32 @@ footer, header, menu, nav, section {
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
-  /*border-radius: 30px;*/
+}
+
+/*版心*/
+@media screen and (min-width: 1200px) { /* PC */
+  .face {
+    width: 75%;
+    margin: 0 auto;
+  }
+}
+@media screen and (max-width: 1199px) and (min-width: 768px) { /* 平板 */
+  .face {
+    width: 100%;
+    margin: 0 auto;
+  }
+  img {
+    width: 100%; /*指定平板端的图片按照屏幕大小展示*/
+  }
+}
+@media screen and (max-width: 767px) { /* 手机 */
+  .face {
+    width: 100%;
+    margin: 0 auto;
+  }
+  img {
+    width: 100%; /*指定手机端的图片按照屏幕大小展示*/
+  }
 }
 
 /*------------------------------navigator start------------------------------*/
@@ -72,71 +91,143 @@ nav {
   transition: all 0.3s ease-in-out;
 }
 
-nav .nav-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1000px;
-  margin: 0 auto;
-  height: 25px;
-  padding: 20px 0;
-  transition: all 0.3s ease-in-out;
+@media screen and (min-width: 1200px) { /* PC */
+  nav .nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 1000px;
+    height: 25px;
+    margin: 0 auto;
+    padding: 20px 0;
+    transition: all 0.3s ease-in-out;
+  }
+  nav .nav-container .logo {
+    font-weight: bold;
+    font-size: larger;
+  }
+
+  /*PC端隐藏*/
+  nav .nav-toggle {
+    display: none;
+    font-size: 24px;
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+  nav ul {
+    display: flex;
+    list-style-type: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  nav a {
+    color: #ffffff;
+    text-decoration: none;
+    padding: 7px 15px;
+    transition: all 0.3s ease-in-out;
+  }
+  nav.active {
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+  nav.active a {
+    color: black;
+  }
+  nav.active .container {
+    padding: 10px 0;
+  }
+  nav a.current,
+  nav a:hover {
+    color: #ed130b;
+    font-weight: bold;
+  }
+
+  /*搜索框*/
+  nav .search-box .search-input {
+    height: 24px;
+    /*将输入框变成下划线*/
+    outline: none;
+    border: none;
+    border-radius: 10px;
+  }
+  nav .search-box .search-btn {
+    background-color: #3270e2;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 15px;
+  }
 }
 
-nav .nav-container .logo {
-  font-weight: bold;
-  font-size: larger;
+@media screen and (max-width: 1199px) { /* 手机、平板 */
+  nav .nav-container {
+    background-color: black;
+    position: absolute;  /* 绝对定位 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 10px;
+    margin: 0 auto;
+    padding: 18px 10px;
+    transition: all 0.3s ease-in-out;
+  }
+  nav .nav-container .logo {
+    font-weight: bold;
+    font-size: larger;
+  }
+
+  nav a {
+    color: #ffffff;
+    text-decoration: none;
+    padding: 7px 15px;
+    transition: all 0.3s ease-in-out;
+  }
+  nav li a {
+    color: blue;
+  }
+
+  /*移动端展示菜单按钮*/
+  nav .nav-toggle {
+    color: #ffffff;
+    display: block;
+    font-size: 24px;
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+
+  nav .link-container {
+    display: none; /*暂时影藏*/
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  /* 展开状态 */
+  .nav-container .link-container.open {
+    display: block;
+    position: absolute;  /* 绝对定位 */
+    top: 100%;           /* 紧贴 nav-toggle 下方 */
+    left: 66%;
+  }
+  .nav-container .link-container li { /*定义列表的格式*/
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: larger;
+  }
+
+  /*暂时影藏*/
+  nav .search-box {
+    display: none;
+  }
 }
 
-nav ul {
-  display: flex;
-  list-style-type: none;
-  align-items: center;
-  justify-content: center;
-}
-
-nav a {
-  color: #fff;
-  text-decoration: none;
-  padding: 7px 15px;
-  transition: all 0.3s ease-in-out;
-}
-nav.active {
-  background-color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-nav.active a {
-  color: #000;
-}
-nav.active .container {
-  padding: 10px 0;
-}
-nav a.current,
-nav a:hover {
-  color: #c0392b;
-  font-weight: bold;
-}
-/*搜索框*/
-nav .search-box .search-input {
-  height: 24px;
-  /*将输入框变成下划线*/
-  outline: none;
-  border: none;
-  border-radius: 10px;
-}
-nav .search-box .search-btn {
-  background-color: #3270e2;
-  border: none;
-  color: white;
-  padding: 8px 16px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  border-radius: 15px;
-}
 /*------------------------------navigator end------------------------------*/
-
 
 /*------------------------------back to top start------------------------------*/
 #backToTopBtn {
@@ -158,7 +249,6 @@ nav .search-box .search-btn {
 .footer-container {
   clear: both;
   width: 100%;
-
   padding-top: 10px;
   padding-bottom: 20px;
   text-align: center;
@@ -166,14 +256,14 @@ nav .search-box .search-btn {
 }
 
 .footer-container .desc {
-  font-size: large;
+  font-size: medium;
   /*行间距*/
-  line-height: 15px;
+  line-height: 20px;
 }
 .footer-container .desc a {
   /*先移除掉超链接的默认样式，再自定义样式*/
   text-decoration:none;
-  font-size: large;
+  font-size: medium;
   color: black;
   /*行间距*/
   line-height: 15px;

@@ -50,8 +50,8 @@
       <div class="box" th:each="article : ${pageInfo.getList()}">
         <div class="article-abstract">
           <a th:href="${article.url}" target="_blank">
-            <h2 class="title"><span th:text="${article.title}">title</span> </h2>
-            <p class="summary"><span th:text="${article.summary}">summary</span></p>
+            <h2 class="title" th:text="${article.title}">title</h2>
+            <p class="summary" th:text="${article.summary}">summary</p>
             <p class="meta">
               <span>UpdateTime: <span th:text="${article.updateTime == null ? article.createTime : article.updateTime}">UpdateTime</span></span>&emsp;
               <span th:if="${article.authorNames != null}">Author: <span th:text="${article.authorNames}">name</span>；</span>
@@ -69,10 +69,7 @@
 
   <div class="face page">
     <button type="button" id="passPageBtn" class="from-btn" th:value="${pageInfo.getPrePage()}">上一页</button>
-    <!--<a th:href="'/article/page/' + ${pageResponseDto.getCurrentPage() - 1}">上一页</a>-->
-    &emsp;&emsp;&emsp;&emsp;
-    当前页：<span th:text="${pageInfo.getPageNum()}">1</span> / <span th:text="${pageInfo.getPages()}">1</span>
-    &emsp;&emsp;&emsp;&emsp;
+    <span class="cur-page">当前页：<span th:text="${pageInfo.getPageNum()}">1</span> / <span th:text="${pageInfo.getPages()}">1</span></span>
     <button type="button" id="nextPageBtn" class="from-btn" th:value="${pageInfo.getNextPage()}">下一页</button>
   </div>
 

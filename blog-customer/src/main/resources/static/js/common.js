@@ -27,6 +27,28 @@ function guid() {
 }
 // ------------------------------------获取浏览器的信息，标识浏览器的唯一性 NED ------------------------------------
 
+//-----------------------------------头部导航栏 START----------------------------------
+//头部导航栏随着光标变色
+const nav = document.querySelector('nav')
+window.addEventListener('scroll', fixNav)
+
+function fixNav() {
+  if(window.scrollY > nav.offsetHeight + 150) {
+    nav.classList.add('active')
+  } else {
+    nav.classList.remove('active')
+  }
+}
+
+// 适配移动端
+const navToggle = document.getElementById('navToggle')
+const navMenu = document.getElementById('navMenu')
+
+navToggle.addEventListener('click', () => {
+  navMenu.classList.toggle('open')
+})
+//-----------------------------------头部导航栏 END----------------------------------
+
 //-----------------------------------文章搜索 START----------------------------------
 $("#searchBtn").click(function () {
   let uri = "/article/page/1"

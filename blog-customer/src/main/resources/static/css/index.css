@@ -56,21 +56,55 @@
   overflow-x: hidden;
 }
 
-.box {
-  background-color: steelblue;
-  color: #fff;
-  display: flex;
-  /*当有内容超出时，直接隐藏，不让其超出div*/
-  overflow: hidden;
-  align-items: center;
-  justify-content: left;
-  width: 850px;
-  height: 130px;
-  margin: 7px;
-  border-radius: 10px;
-  box-shadow: 2px 4px 5px rgba(0, 0, 0, 0.3);
-  transform: translateX(400%);
-  transition: transform 0.4s ease;
+
+@media screen and (min-width: 1200px) { /* PC */
+  .box {
+    background-color: steelblue;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    width: 75%;
+    min-height: 130px;
+    margin: 7px;
+    border-radius: 10px;
+    box-shadow: 2px 4px 5px rgba(0, 0, 0, 0.3);
+    transform: translateX(400%);
+    transition: transform 0.4s ease;
+  }
+  .article-abstract {
+    margin-left: 10px;
+  }
+  .article-abstract .meta {
+    margin-top: 5px;
+    font-size: small;
+  }
+}
+@media screen and (max-width: 1199px) { /* 手机、平板 */
+  .box {
+    background-color: steelblue;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    width: 92%;
+    min-height: 130px;
+    margin: 5px 2px;
+    border-radius: 10px;
+    box-shadow: 2px 4px 5px rgba(0, 0, 0, 0.3);
+    transform: translateX(400%);
+    transition: transform 0.4s ease;
+  }
+  .box h2 {
+    font-size: larger;
+  }
+  .article-abstract {
+    margin-left: 10px;
+  }
+  .article-abstract .meta {
+    margin-top: 5px;
+    font-size: small;
+  }
 }
 
 .box:nth-of-type(even) {
@@ -86,31 +120,44 @@
 .box a:hover { text-decoration:none; color: #fff}
 .box a:visited { text-decoration: none; color: #fff}
 
-
-.article-abstract {
-  margin-left: 15px;
-  white-space: nowrap;      /* 不换行 */
-}
-.article-abstract .title {
-  width: 800px;
-  overflow: hidden;         /* 超出隐藏 */
-  text-overflow: ellipsis;  /* 超出显示省略号 */
-}
-.article-abstract .summary {
-  max-height: 40px;
-  width: 830px;
-  overflow: hidden;         /* 超出隐藏 */
-  text-overflow: ellipsis;  /* 超出显示省略号 */
-}
-.article-abstract .meta {
-  margin-top: 5px;
-  font-size: small;
-}
-
 /*上一页、下一页*/
-.page {
-  height: 49px;
-  margin: 10px auto;
-  text-align: center;
-  font-size: x-large;
+@media screen and (min-width: 1200px) { /* PC */
+  .page {
+    height: 55px;
+    margin: 10px auto;
+    text-align: center;
+    font-size: x-large;
+  }
+  .page .cur-page {
+    margin: 0 40px;
+  }
+  .page .from-btn {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: x-large;
+  }
 }
+@media screen and (max-width: 1199px) { /* 手机、平板 */
+  .page {
+    height: 55px;
+    margin: 10px auto;
+    text-align: center;
+    font-size: large;
+  }
+  .page .from-btn {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: large;
+  }
+}
+

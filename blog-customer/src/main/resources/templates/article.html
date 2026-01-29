@@ -189,14 +189,10 @@
 
 <script>
   $(function () {
-    //检查浏览器类型，移除仅在PC端才会显示的元素
-    let type = clientType()
-    if("PC" !== type) {
-      $("#articleMetaDiv").removeClass("face")
-      $("#articleMainDiv").removeClass("face")
-      $("#articleCommentDiv").removeClass("face")
-
-      $("aside").remove()
+    //获取屏幕宽度（不是物理屏幕）
+    const screenWidth = window.innerWidth
+    if(screenWidth < 1200) {
+      $("aside").remove() //移动端，移除侧边导航栏
     }
 
     //当出现滚动时，就检测一下，是否需要显示回到顶部按钮

@@ -1,15 +1,3 @@
-//--------------------------头部导航栏随着光标变色 START---------------------
-const nav = document.querySelector('nav')
-window.addEventListener('scroll', fixNav)
-
-function fixNav() {
-  if(window.scrollY > nav.offsetHeight + 150) {
-    nav.classList.add('active')
-  } else {
-    nav.classList.remove('active')
-  }
-}
-//--------------------------头部导航栏随着光标变色 END---------------------
 
 //-----------------------让文章条目动画出入 START----------------------------------
 const boxes = document.querySelectorAll('.box')
