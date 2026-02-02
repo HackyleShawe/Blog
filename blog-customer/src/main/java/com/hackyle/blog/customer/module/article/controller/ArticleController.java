@@ -124,8 +124,9 @@ public class ArticleController {
         }
         long startTime = System.currentTimeMillis();
 
-        //查文章主体内容，文章完整path为/{categoryCode}/{articleCode}
-        ArticleVo articleVo = articleService.get(categoryCode, articleCode);
+        //历史文章的完整路径：分类编码 + 文章编码，文章完整path为/{categoryCode}/{articleCode}
+        String path = "/" +categoryCode + "/" + articleCode;
+        ArticleVo articleVo = articleService.get(path);
         modelAndView.addObject("articleVo", articleVo);
 
         MetaVo metaVo = new MetaVo();

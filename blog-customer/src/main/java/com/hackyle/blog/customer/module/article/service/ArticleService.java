@@ -9,6 +9,4 @@ public interface ArticleService {
 
     ArticleVo get(String articleCode);
 
-    ArticleVo get(String categoryCode, String articleCode);
-
 }

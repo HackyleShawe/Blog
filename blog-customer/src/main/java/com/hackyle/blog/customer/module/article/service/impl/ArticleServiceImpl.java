@@ -154,19 +154,4 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleEntity
         return articleVo;
     }
 
-    @Override
-    public ArticleVo get(String categoryCode, String articleCode) {
-        LambdaQueryWrapper<CategoryEntity> categoryQuery = new LambdaQueryWrapper<>();
-        categoryQuery.eq(CategoryEntity::getCode, categoryCode);
-        categoryQuery.eq(CategoryEntity::getDeleted, DeletedEnum.FALSE.getCode());
-        categoryQuery.eq(CategoryEntity::getStatus, StatusEnum.YES.getCode());
-        long count = categoryService.count(categoryQuery);
-        if(count == 0) {
-            throw new Page404Exception("分类编码不存在");
-        }
-
-        //历史文章的完整路径：分类编码 + 文章编码
-        String path = "/" +categoryCode + "/" + articleCode;
-        return get(path);
-    }
 }
