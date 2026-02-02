@@ -189,6 +189,15 @@ export default {
           editor.on('FullscreenStateChanged', (e) => {
             _this.fullscreen = e.state
           })
+          //按Ctrl+S自动保存，Windows系统
+          editor.addShortcut('ctrl+s', '保存', () => {
+            // console.log("== 按Ctrl+S自动保存，Windows系统调用父组件的submitForm方法")
+            _this.$emit('save')
+          })
+          //按Ctrl+S自动保存，macOS系统
+          editor.addShortcut('meta+s', '保存', () => {
+            _this.$emit('save')
+          })
         },
         // it will try to keep these URLs intact
         // https://www.tiny.cloud/docs-3x/reference/configuration/Configuration3x@convert_urls/
@@ -212,9 +221,6 @@ export default {
     getContent() {
       window.tinymce.get(this.tinymceId).getContent()
     },
-    imageSuccessCBK(arr) {
-      arr.forEach(v => window.tinymce.get(this.tinymceId).insertContent(`<img class="wscnph" src="${v}" >`))
-    }
   }
 }
 </script>

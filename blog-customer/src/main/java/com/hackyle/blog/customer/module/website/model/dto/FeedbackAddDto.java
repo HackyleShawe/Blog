@@ -13,12 +13,12 @@ public class FeedbackAddDto {
     /**
      * 留言者称呼
      */
-    @NotBlank
+    @NotBlank(message = "留言者称呼不能为空")
     private String name;
     /**
      * 留言者邮箱
      */
-    @Email
+    @Email(message = "邮箱格式不合法")
     private String email;
     /**
      * 留言者电话
@@ -28,7 +28,7 @@ public class FeedbackAddDto {
     /**
      * 留言者的链接（个人主页、博客页）
      */
-    @URL
+    //@URL(message = "URL格式不合法") 强制要求：协议://domain.二级域
     private String link;
 
     /**

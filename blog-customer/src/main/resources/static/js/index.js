@@ -1,15 +1,3 @@
-//--------------------------头部导航栏变换随着滑动颜色 START---------------------
-const nav = document.querySelector('nav')
-window.addEventListener('scroll', fixNav)
-
-function fixNav() {
-  if(window.scrollY > nav.offsetHeight + 150) {
-    nav.classList.add('active')
-  } else {
-    nav.classList.remove('active')
-  }
-}
-//--------------------------头部导航栏变换随着滑动颜色 END---------------------
 
 //-----------------------让文章条目动画出入 START----------------------------------
 const boxes = document.querySelectorAll('.box')
@@ -17,6 +5,8 @@ window.addEventListener('scroll', checkBoxes)
 checkBoxes()
 
 function checkBoxes() {
+  // window.innerHeight：当前视口高度；/ 5 * 4：等于 视口高度的 80%
+  // 当元素的顶部进入 屏幕高度的 80% 以内，就触发动画
   const triggerBottom = window.innerHeight / 5 * 4
   boxes.forEach(box => {
     const boxTop = box.getBoundingClientRect().top

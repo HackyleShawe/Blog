@@ -29,6 +29,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +85,9 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
             //关闭流，否则删除访问文件时显示被占用，导致删除失败
             inputStream.close();
             outputStream.close();
+
+            //设置文件为可读
+            Files.setPosixFilePermissions(Paths.get(targetFile), PosixFilePermissions.fromString("rw-r--r--"));
 
             fileEntity.setFileLink(resConfig.getDomain() + pathSplit + nameByUUID);
             fileEntities.add(fileEntity);
@@ -141,32 +148,33 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
         return file;
     }
 
+    /**
+     * 保存文章中的图片，并关联到文章中
+     * @param articleId 文章ID
+     * @param imgUrls 从文章内容中解析出的图片连接
+     */
     @Override
     public boolean saveImgFile(long articleId, Set<String> imgUrls) {
-        //找出已经上传但是没有归属到具体文章的图片
+        //找出已经上传但是没有归属到具体文章的图片。注意：如果本次修改没有新增图片，则将会没有数据
         LambdaQueryWrapper<FileEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(FileEntity::getArticleId, 0);
         queryWrapper.eq(FileEntity::getDeleted, Boolean.FALSE);
         List<FileEntity> newImgFiles = this.list(queryWrapper);
-        if (CollectionUtil.isEmpty(newImgFiles)) {
-            throw new BizException("文章中的图片上传失败，请检查");
-        }
-        if (imgUrls.size() > newImgFiles.size()) {
-            throw new BizException("文章中的部分图片上传失败，请检查");
-        }
-
-        //从已经上传但是还没有归属到具体文章的图片中，过滤出本次文章保存的图片
-        List<FileEntity> existsImgFiles = newImgFiles.stream()
-                .filter(ele -> imgUrls.contains(ele.getFileLink()))
-                .collect(Collectors.toList());
-        if (CollectionUtil.isNotEmpty(existsImgFiles)) {
-            List<Long> existsIds = existsImgFiles.stream().map(FileEntity::getId).distinct().collect(Collectors.toList());
-            LambdaUpdateWrapper<FileEntity> updateWrapper = new LambdaUpdateWrapper<>();
-            updateWrapper.in(FileEntity::getId, existsIds);
-            updateWrapper.set(FileEntity::getArticleId, articleId);
-            boolean update = this.update(updateWrapper);
-            if (!update) {
-                throw new BizException("关联已上传的图片与文章失败");
+        //如果有新增图片，则将其关联到该文章中
+        if(CollectionUtil.isNotEmpty(newImgFiles)) {
+            //从已经上传但是还没有归属到具体文章的图片中，过滤出本次文章保存的图片
+            List<FileEntity> existsImgFiles = newImgFiles.stream()
+                    .filter(ele -> imgUrls.contains(ele.getFileLink()))
+                    .collect(Collectors.toList());
+            if (CollectionUtil.isNotEmpty(existsImgFiles)) {
+                List<Long> existsIds = existsImgFiles.stream().map(FileEntity::getId).distinct().collect(Collectors.toList());
+                LambdaUpdateWrapper<FileEntity> updateWrapper = new LambdaUpdateWrapper<>();
+                updateWrapper.in(FileEntity::getId, existsIds);
+                updateWrapper.set(FileEntity::getArticleId, articleId);
+                boolean update = this.update(updateWrapper);
+                if (!update) {
+                    throw new BizException("关联已上传的图片与文章失败");
+                }
             }
         }
 
@@ -193,23 +201,47 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileEntity> impleme
     public boolean del(Set<Long> ids) {
         List<FileEntity> fileEntities = this.listByIds(ids);
         if (CollectionUtil.isNotEmpty(fileEntities)) {
-            return true;
+            return false;
         }
 
         List<Long> delIds = new ArrayList<>();
         for (FileEntity fileEntity : fileEntities) {
+            delIds.add(fileEntity.getId());
             String filePath = fileEntity.getFileLink().substring(resConfig.getDomain().length());
             String fullPath = resConfig.getStoragePath() + filePath;
             File file = new File(fullPath);
-
-            if(file.delete()) {
-                delIds.add(fileEntity.getId());
-                //throw new RuntimeException("文件删除失败！");
-            }
+            file.delete(); //注意：如果文件删除失败，数据库执行成功，则这个文件将不会被清除
         }
 
+        //返回值的含义是：操作是否执行成功，而不是是否真的删除了数据
         boolean del = this.removeBatchByIds(delIds);
         log.info("文件删除-delIds={},deleted={}", JSON.toJSONString(delIds), del);
+
+        return del;
+    }
+
+    @Override
+    public boolean clean() {
+        LambdaQueryWrapper<FileEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(FileEntity::getArticleId, 0);
+
+        List<FileEntity> files = this.list(queryWrapper);
+        log.info("查找删除没有绑定文章的文件files={}", JSON.toJSONString(files));
+        if (CollectionUtil.isEmpty(files)) {
+            return true;
+        }
+
+        List<Long> delIds = new ArrayList<>();
+        for (FileEntity fileEntity : files) {
+            delIds.add(fileEntity.getId());
+            String filePath = fileEntity.getFileLink().substring(resConfig.getDomain().length());
+            String fullPath = resConfig.getStoragePath() + filePath;
+            File file = new File(fullPath);
+            file.delete(); //注意：如果文件删除失败，数据库执行成功，则这个文件将不会被清除
+        }
+        //返回值的含义是：操作是否执行成功，而不是是否真的删除了数据
+        boolean del = this.removeBatchByIds(delIds);
+        log.info("删除没有绑定文章的文件-delIds={},deleted={}", JSON.toJSONString(delIds), del);
 
         return del;
     }

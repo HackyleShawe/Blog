@@ -18,6 +18,8 @@ public interface FileService extends IService<FileEntity> {
 
     boolean del(Set<Long> ids);
 
+    boolean clean();
+
     boolean update(FileUpdateDto updateDto);
 
     String download(Long id);

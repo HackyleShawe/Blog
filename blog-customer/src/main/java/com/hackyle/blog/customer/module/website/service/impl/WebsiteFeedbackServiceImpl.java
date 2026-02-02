@@ -5,11 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.hackyle.blog.common.exception.BizException;
 import com.hackyle.blog.common.ip.IpUtils;
 import com.hackyle.blog.common.ip.PconlineIpRegionDto;
 import com.hackyle.blog.common.ip.PconlineIpRegionUtils;
 import com.hackyle.blog.common.util.BeanCopyUtils;
 import com.hackyle.blog.common.util.PageHelperUtils;
+import com.hackyle.blog.customer.infrastructure.redis.CacheKey;
+import com.hackyle.blog.customer.module.article.model.dto.CommentAddDto;
 import com.hackyle.blog.customer.module.website.mapper.WebsiteFeedbackMapper;
 import com.hackyle.blog.customer.module.website.model.dto.FeedbackAddDto;
 import com.hackyle.blog.customer.module.website.model.dto.FeedbackQueryDto;
@@ -17,7 +20,11 @@ import com.hackyle.blog.customer.module.website.model.dto.FeedbackUpdateDto;
 import com.hackyle.blog.customer.module.website.model.entity.WebsiteFeedbackEntity;
 import com.hackyle.blog.customer.module.website.model.vo.FeedbackVo;
 import com.hackyle.blog.customer.module.website.service.WebsiteFeedbackService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -26,13 +33,22 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 public class WebsiteFeedbackServiceImpl extends ServiceImpl<WebsiteFeedbackMapper, WebsiteFeedbackEntity>
     implements WebsiteFeedbackService {
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+
     @Override
     public boolean add(FeedbackAddDto addDto) {
+        //恶意提交检查
+        badRequestCheck();
+
         WebsiteFeedbackEntity feedbackEntity = BeanCopyUtils.copy(addDto, WebsiteFeedbackEntity.class);
 
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -52,52 +68,32 @@ public class WebsiteFeedbackServiceImpl extends ServiceImpl<WebsiteFeedbackMappe
         return this.save(feedbackEntity);
     }
 
-    @Transactional
-    @Override
-    public boolean del(Set<Long> idSet) {
-        return this.removeBatchByIds(idSet);
+    /**
+     * 一个IP+UA，一天只允许提交5次
+     */
+    private void badRequestCheck() {
+        String publicIp = IpUtils.getPublicIp(); //注意，这里可能获取到的ip是unknown
+        String userAgent = "";
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if(attributes != null) {
+            HttpServletRequest request = attributes.getRequest();
+            userAgent = request.getHeader("User-Agent");
+        }
+        userAgent = StringUtils.isBlank(userAgent) ? "" : userAgent.replaceAll(" ", "");
+
+        String feedbackKey = CacheKey.PREFIX + "feedback:" + publicIp + ":" + userAgent;
+
+        Object feedbackObj = redisTemplate.opsForValue().get(feedbackKey);
+        if(feedbackObj == null) {
+            redisTemplate.opsForValue().set(feedbackKey, 1, 24, TimeUnit.HOURS);
+        } else {
+            int feedbackCount = Integer.parseInt(String.valueOf(feedbackObj));
+            if(feedbackCount > 5) {
+                log.info("对文章的恶意评论-key={},feedbackCount={}", feedbackKey, feedbackCount);
+                throw new BizException("您的反馈过于频繁，请稍后再试！");
+            }
+            redisTemplate.opsForValue().increment(feedbackKey, 1);
+        }
     }
 
-    @Override
-    public boolean update(FeedbackUpdateDto updateDto) {
-        WebsiteFeedbackEntity feedbackEntity = BeanCopyUtils.copy(updateDto, WebsiteFeedbackEntity.class);
-        return this.updateById(feedbackEntity);
-    }
-
-    @Override
-    public FeedbackVo get(Long id) {
-        WebsiteFeedbackEntity feedbackEntity = this.getById(id);
-        return BeanCopyUtils.copy(feedbackEntity, FeedbackVo.class);
-    }
-
-    @Override
-    public PageInfo<FeedbackVo> list(FeedbackQueryDto queryDto) {
-        LambdaQueryWrapper<WebsiteFeedbackEntity> queryWrapper = new LambdaQueryWrapper<>();
-        if(StringUtils.isNotBlank(queryDto.getName())) {
-            queryWrapper.like(WebsiteFeedbackEntity::getName, queryDto.getName());
-        }
-        if(StringUtils.isNotBlank(queryDto.getEmail())){
-            queryWrapper.like(WebsiteFeedbackEntity::getEmail, queryDto.getEmail());
-        }
-        if(StringUtils.isNotBlank(queryDto.getPhone())) {
-            queryWrapper.like(WebsiteFeedbackEntity::getPhone, queryDto.getPhone());
-        }
-        if(StringUtils.isNotBlank(queryDto.getLink())) {
-            queryWrapper.like(WebsiteFeedbackEntity::getLink, queryDto.getLink());
-        }
-        if(StringUtils.isNotBlank(queryDto.getContent())) {
-            queryWrapper.like(WebsiteFeedbackEntity::getContent, queryDto.getContent());
-        }
-        if(queryDto.getStatus() != null) {
-            queryWrapper.eq(WebsiteFeedbackEntity::getStatus, queryDto.getStatus());
-        }
-        //if(queryDto.getDeleted() != null) {
-        //    queryWrapper.eq(WebsiteFeedbackEntity::getDeleted, queryDto.getDeleted());
-        //}
-
-        PageHelper.startPage(queryDto.pageNum, queryDto.pageSize);
-        List<WebsiteFeedbackEntity> feedbacks = this.list(queryWrapper);
-
-        return PageHelperUtils.getPageInfo(feedbacks, FeedbackVo.class);
-    }
 }

@@ -57,13 +57,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEnt
             return Collections.emptyList();
         }
 
-        Map<Long, List<CategoryArticleDto>> categoryMap = categoryList.stream().collect(Collectors.groupingBy(CategoryArticleDto::getCategoryId));
+        Map<Long, Integer> categoryMap = categoryList.stream().collect(Collectors.toMap(CategoryArticleDto::getCategoryId, CategoryArticleDto::getArticleNum));
 
         List<CategoryEntity> categoryEntityList = this.listByIds(categoryMap.keySet());
         List<CategoryVo> categoryVos = BeanCopyUtils.copyList(categoryEntityList, CategoryVo.class);
         for (CategoryVo categoryVo : categoryVos) {
-            List<CategoryArticleDto> articleList = categoryMap.get(categoryVo.getId());
-            categoryVo.setArticleNum(CollectionUtil.isEmpty(articleList) ? 0 : articleList.size());
+            Integer articleNum = categoryMap.get(categoryVo.getId());
+            categoryVo.setArticleNum(articleNum == null ? 0 : articleNum);
         }
 
         return categoryVos;

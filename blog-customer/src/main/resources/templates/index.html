@@ -7,12 +7,12 @@
   <meta name="robots" content="all">
 
   <meta name="author" content="Hackyle; Kyle Shawe">
-  <meta name="reply-to" content="kyleshawe@outlook.com;1617358182@qq.com">
+  <meta name="reply-to" content="wechat:ks971916;1792715147@qq.com;kyleshawe@outlook.com">
   <meta name="generator" content="Sublime Text 3; VSCode">
 
   <meta name="keywords" content="Hackyle Shawe; Kyle; hackyle.com; blog.hackyle.com">
   <meta name="description" content="你好，欢迎来到我的技术博客。我是一名Java后端开发工程师，主要技术栈是Spring生态、RocketMQ与Kafka、MySQL和Redis、Docker、Nginx。此外，对前端的一些技术也略知一二。本站点记录我学习和工作过程中的一些基础技术。">
-  <meta name="copyright" content="Copy Right: 2022 HACKYLE. All rights reserved">
+  <meta name="copyright" content="Copy Right: 2022-2026 HACKYLE. All rights reserved">
 
   <!-- 给网站设置图标 -->
   <link rel="icon" href="/img/favicon.ico">
@@ -46,16 +46,12 @@
   <main class="face">
     <!-- section1:文章列表 -->
     <section class="sec-container">
-
-      <!--<div class="article-pic">-->
-      <!--  <img src="http://127.0.0.1:9000/blog/2022/10/9da51ce4c8df47c6bbe326462baa24f8.png"/>-->
-      <!--</div>-->
       <!--scroll-animation-->
       <div class="box" th:each="article : ${pageInfo.getList()}">
         <div class="article-abstract">
           <a th:href="${article.url}" target="_blank">
-            <p class="title"><h1><span th:text="${article.title}">title</span> </h1>
-            <p class="summary"><span th:text="${article.summary}">summary</span></p>
+            <h2 class="title" th:text="${article.title}">title</h2>
+            <p class="summary" th:text="${article.summary}">summary</p>
             <p class="meta">
               <span>UpdateTime: <span th:text="${article.updateTime == null ? article.createTime : article.updateTime}">UpdateTime</span></span>&emsp;
               <span th:if="${article.authorNames != null}">Author: <span th:text="${article.authorNames}">name</span>；</span>
@@ -73,10 +69,7 @@
 
   <div class="face page">
     <button type="button" id="passPageBtn" class="from-btn" th:value="${pageInfo.getPrePage()}">上一页</button>
-    <!--<a th:href="'/article/page/' + ${pageResponseDto.getCurrentPage() - 1}">上一页</a>-->
-    &emsp;&emsp;&emsp;&emsp;
-    当前页：<span th:text="${pageInfo.getPageNum()}">1</span> / <span th:text="${pageInfo.getPages()}">1</span>
-    &emsp;&emsp;&emsp;&emsp;
+    <span class="cur-page">当前页：<span th:text="${pageInfo.getPageNum()}">1</span> / <span th:text="${pageInfo.getPages()}">1</span></span>
     <button type="button" id="nextPageBtn" class="from-btn" th:value="${pageInfo.getNextPage()}">下一页</button>
   </div>
 
