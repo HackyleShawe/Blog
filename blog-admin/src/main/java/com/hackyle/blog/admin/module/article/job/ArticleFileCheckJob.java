@@ -7,7 +7,6 @@ import com.hackyle.blog.admin.module.article.service.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -37,22 +36,22 @@ public class ArticleFileCheckJob {
      *
      * 如果是多节点部署，注意应该保证任务只在一个节点上执行
      */
-    @Scheduled(cron = "0 0 1 ? * SUN")
+    //@Scheduled(cron = "0 0 1 ? * SUN")
     //@Scheduled(cron = "0 */2 * * * ?") //测试使用
     public void fileCheckAndClean() {
-        log.info("=======ArticleFileCheckJob Start=======");
-        try {
-            fileService.clean();
-        } catch (Exception e) {
-            log.error("ArticleFileCheckJob-clean出现异常：", e);
-        }
-
-        try {
-            delFile();
-        }catch (Exception e) {
-            log.error("ArticleFileCheckJob-delFile出现异常：", e);
-        }
-        log.info("=======ArticleFileCheckJob End=======");
+        //log.info("=======ArticleFileCheckJob Start=======");
+        //try {
+        //    fileService.clean();
+        //} catch (Exception e) {
+        //    log.error("ArticleFileCheckJob-clean出现异常：", e);
+        //}
+        //
+        //try {
+        //    delFile();
+        //}catch (Exception e) {
+        //    log.error("ArticleFileCheckJob-delFile出现异常：", e);
+        //}
+        //log.info("=======ArticleFileCheckJob End=======");
     }
 
     /**
@@ -82,7 +81,7 @@ public class ArticleFileCheckJob {
         for (File file : fileList) {
             String name = file.getName();
             boolean exist = existDatabase(name);
-            log.info("检查{}是否在数据库中存在：{}", name, exist);
+            log.info("检查{}是否在数据库中存在：{}", file.getAbsolutePath(), exist);
             if(!exist) {
                 boolean deleted = file.delete();
                 log.info("从文件系统中删除文件：name={}, deleted={}", name, deleted);
