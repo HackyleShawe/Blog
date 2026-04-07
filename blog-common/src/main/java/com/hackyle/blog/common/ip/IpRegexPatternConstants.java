@@ -31,4 +31,9 @@ public class IpRegexPatternConstants {
 
     public static final String UNKNOWN = "unknown";
 
+    // 本地回环IP（IPv4）
+    public static final String LOCALHOST_IP = "127.0.0.1";
+    // 本地回环IP（IPv6）
+    public static final String LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
+
 }

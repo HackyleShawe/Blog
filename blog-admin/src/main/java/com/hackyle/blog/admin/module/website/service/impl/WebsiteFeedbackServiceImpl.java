@@ -42,7 +42,7 @@ public class WebsiteFeedbackServiceImpl extends ServiceImpl<WebsiteFeedbackMappe
             feedbackEntity.setUserAgent(userAgent);
 
         }
-        String publicIp = IpUtils.getPublicIp();
+        String publicIp = IpUtils.getClientIP();
         feedbackEntity.setIp(publicIp);
         PconlineIpRegionDto ipRegion = PconlineIpRegionUtils.getIpRegion(publicIp);
         if(ipRegion != null) {

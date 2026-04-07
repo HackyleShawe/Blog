@@ -29,7 +29,7 @@ public class VisitLogServiceImpl extends ServiceImpl<VisitLogMapper, VisitLogEnt
             visitLogEntity.setUserAgent(userAgent);
 
         }
-        String publicIp = IpUtils.getPublicIp();
+        String publicIp = IpUtils.getClientIP();
         visitLogEntity.setIp(publicIp);
         PconlineIpRegionDto ipRegion = PconlineIpRegionUtils.getIpRegion(publicIp);
         if(ipRegion != null) {

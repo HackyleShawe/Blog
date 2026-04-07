@@ -1,121 +1,101 @@
 package com.hackyle.blog.common.ip;
 
+import cn.hutool.core.lang.Validator;
+import cn.hutool.core.net.NetUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 获取IP
  */
 public class IpUtils {
-    /**
-     * X-Forwarded-For:简称XFF头，它代表客户端，也就是HTTP的请求端真实的IP
-     * Squid服务代理:只有在通过了HTTP代理或者负载均衡服务器时才会添加该项
-     * 标准格式如下：X-Forwarded-For: client_ip, proxy1_ip, proxy2_ip
-     * 此头是可构造的，因此某些应用中应该对获取到的ip进行验证
-     * 在多级代理网络中，直接用getHeader("x-forwarded-for")可能获取到的是unknown信息，此时需要获取代理代理服务器重新包装的HTTP头信息
-     *
-     * Proxy-Client-IP:Apache 服务代理
-     * X-Real-IP：Nginx服务代理
-     * WL-Proxy-Client-IP：WebLogic 服务代理
-     */
-    private static final String[] HEADERS = {
-            "X-Real-IP",
-            "X-Forwarded-For",
-            "Proxy-Client-IP",
-            "WL-Proxy-Client-IP",
-            "HTTP_CLIENT_IP",
-            "HTTP_X_FORWARDED_FOR"
-    };
 
     /**
-     * 根据 ServletRequest 获取公网 IP
-     * @return 如果有多个，则使用逗号分隔；如果没有则返回unknown
+     * 获取Web客户端真实IP
+     * @return 如果没有公网IP，则返回内网IP
      */
-    public static String getPublicIp() {
+    public static String getClientIP() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if(attributes == null) {
             return IpRegexPatternConstants.UNKNOWN;
         }
         HttpServletRequest request = attributes.getRequest();
 
-        //公网IP
-        List<String> publicIps = new ArrayList<>();
-
-        //从请求头中获取IP地址
-        for (String header : HEADERS) {
-            String ip = request.getHeader(header);
-            if (ip != null && !ip.isEmpty() && !IpRegexPatternConstants.UNKNOWN.equalsIgnoreCase(ip)) {
-                if(!IpRegexPatternConstants.PRIVATE_IP_PATTERN.matcher(ip).matches()) {
-                    publicIps.add(ip);
-                }
-            }
-        }
-        //额外获取请求中获取的IP
-        String remoteAddr = request.getRemoteAddr();
-        if (remoteAddr != null && !remoteAddr.isEmpty() && !IpRegexPatternConstants.UNKNOWN.equalsIgnoreCase(remoteAddr)) {
-            if(!IpRegexPatternConstants.PRIVATE_IP_PATTERN.matcher(remoteAddr).matches()) {
-                publicIps.add(remoteAddr);
-            }
+        //优先解析X-Forwarded-For
+        String ip = parseXFF(request);
+        if(StringUtils.isNotBlank(ip)) {
+            return ip;
         }
 
-        //如果没有获取到公网IP，则返回内网IP
-        if(!publicIps.isEmpty()) {
-            return String.join(",", publicIps);
-        } else {
-            return IpRegexPatternConstants.UNKNOWN;
+        //解析其他代理相关头字段
+        ip = parseExtendHeader(request);
+        if(StringUtils.isNotBlank(ip)) {
+            return ip;
         }
+
+        //最后降级使用getRemoteAddr
+        ip = request.getRemoteAddr();
+
+        return IpRegexPatternConstants.LOCALHOST_IPV6.equals(ip) ? IpRegexPatternConstants.LOCALHOST_IP : ip;
     }
 
     /**
-     * 根据 ServletRequest 获取IP，如果没有公网IP，则返回内网IP
-     * @return 如果有多个，则使用逗号分隔；如果没有则返回unknown
+     * 从 X-Forwarded-For 中从右往左优先返回第一个有效公网IP，无公网IP则返回第一个有效IP
      */
-    public static String getIp() {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if(attributes == null) {
-            return IpRegexPatternConstants.UNKNOWN;
+    private static String parseXFF(HttpServletRequest request) {
+        if(request == null) {
+            return null;
         }
-        HttpServletRequest request = attributes.getRequest();
+        String xff =  request.getHeader("X-Forwarded-For");
+        if(StringUtils.isBlank(xff)) {
+            return null;
+        }
 
-        //公网IP
-        List<String> publicIps = new ArrayList<>();
-        //私网IP
-        List<String> privateIps = new ArrayList<>();
-
-        //从请求头中获取IP地址
-        for (String header : HEADERS) {
-            String ip = request.getHeader(header);
-            if (ip != null && !ip.isEmpty() && !IpRegexPatternConstants.UNKNOWN.equalsIgnoreCase(ip)) {
-                if(!IpRegexPatternConstants.PRIVATE_IP_PATTERN.matcher(ip).matches()) {
-                    publicIps.add(ip);
-                } else {
-                    privateIps.add(ip);
-                }
+        String[] ips = xff.trim().split(",");
+        //从后往前找第一个有效公网IP
+        for (int i = ips.length - 1; i >= 0; i--) {
+            String ip = ips[i].trim();
+            //IP格式合法 + 非内网IP = 有效公网IP
+            if((Validator.isIpv4(ip) || Validator.isIpv6(ip)) && !NetUtil.isInnerIP(ip)) {
+                return ip;
             }
         }
-        //额外获取请求中获取的IP
-        String remoteAddr = request.getRemoteAddr();
-        if (remoteAddr != null && !remoteAddr.isEmpty() && !IpRegexPatternConstants.UNKNOWN.equalsIgnoreCase(remoteAddr)) {
-            if(!IpRegexPatternConstants.PRIVATE_IP_PATTERN.matcher(remoteAddr).matches()) {
-                publicIps.add(remoteAddr);
-            } else {
-                privateIps.add(remoteAddr);
+        //无公网IP时，返回第一个格式合法的IP（可能是内网IP）
+        for (String ip : ips) {
+            ip = ip.trim();
+            if (Validator.isIpv4(ip) || Validator.isIpv6(ip)) {
+                return ip;
             }
         }
 
-        //如果没有获取到公网IP，则返回内网IP
-        if(!publicIps.isEmpty()) {
-            return String.join(",", publicIps);
-        }
-        if(!privateIps.isEmpty()) {
-            return String.join(",", privateIps);
-        }
-
-        return IpRegexPatternConstants.UNKNOWN;
+        return null;
     }
+
+    private static String parseExtendHeader(HttpServletRequest request) {
+        if(request == null) {
+            return null;
+        }
+
+        String[] headers = {
+                "X-Real-IP", //Nginx
+                "Proxy-Client-IP", //Apache
+                "WL-Proxy-Client-IP", //WebLogic
+                "HTTP_CLIENT_IP",
+                "HTTP_X_FORWARDED_FOR"
+        };
+        // 遍历头字段，找到第一个有效IP
+        for (String header : headers) {
+            String ip = request.getHeader(header);
+            if (Validator.isIpv4(ip) || Validator.isIpv6(ip)) {
+                return ip;
+            }
+        }
+
+        return null;
+    }
+
 
 }

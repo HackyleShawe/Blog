@@ -75,7 +75,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, CommentEntity
 
 
     private void badRequestCheck(CommentAddDto commentAddDto) {
-        String publicIp = IpUtils.getPublicIp(); //注意，这里可能获取到的ip是unknown
+        String publicIp = IpUtils.getClientIP(); //注意，这里可能获取到的ip是unknown
         //5小时内对某article限制提交5次
         String articleIpKey = CacheKey.PREFIX + commentAddDto.getArticleId() + ":" +publicIp;
         String articleIpVal = valueOperations.get(articleIpKey);
