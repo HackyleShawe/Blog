@@ -36,9 +36,9 @@ public class LogTaskThreadPool {
                 CPU_COUNT *4,
                 60L,
                 TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(1000),  //todo 设计合理的阻塞队列
+                new LinkedBlockingQueue<>(1000),  // 常见经验值
                 new NamedThreadFactory("blog-admin-log-task"), //线程名称前缀，例如专门用于异步保存日志的命名为log-pool
-                new ThreadPoolExecutor.CallerRunsPolicy()  //todo 设计合理的拒绝策略
+                new ThreadPoolExecutor.CallerRunsPolicy()  // 超出最大线程数时，由调用线程处理该任务
         );
     }
 

@@ -1,4 +1,4 @@
-package com.hackyle.blog.admin.infrastructure.filter;
+package com.hackyle.blog.admin.global.filter;
 
 import com.hackyle.blog.admin.infrastructure.holder.AuthedContextHolder;
 import com.hackyle.blog.admin.module.auth.model.dto.UserDetailsDto;

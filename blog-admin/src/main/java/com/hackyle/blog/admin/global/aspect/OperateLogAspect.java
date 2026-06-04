@@ -1,4 +1,4 @@
-package com.hackyle.blog.admin.infrastructure.aspect;
+package com.hackyle.blog.admin.global.aspect;
 
 import com.hackyle.blog.admin.infrastructure.threadpool.LogTaskThreadPool;
 import lombok.extern.slf4j.Slf4j;

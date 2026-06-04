@@ -1,4 +1,4 @@
-package com.hackyle.blog.admin.handler;
+package com.hackyle.blog.admin.global.handler;
 
 import com.hackyle.blog.common.domain.ApiResponse;
 import com.hackyle.blog.common.exception.AuthenticationException;

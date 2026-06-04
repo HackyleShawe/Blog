@@ -1,6 +1,6 @@
 package com.hackyle.blog.admin.infrastructure.config;
 
-import com.hackyle.blog.admin.infrastructure.filter.AccessInterceptor;
+import com.hackyle.blog.admin.global.filter.AccessInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
